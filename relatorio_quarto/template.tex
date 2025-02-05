@@ -1,0 +1,204 @@
+\usepackage{xcolor}
+\usepackage{fontspec}
+\usepackage{sectsty}
+\usepackage{geometry}
+\usepackage{pagecolor}
+\usepackage{background}
+\usepackage{tocloft}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{tikz}
+\usepackage{graphicx}
+\usepackage{indentfirst}
+\usepackage{etoolbox}
+\usepackage{pdfpages}
+%\usepackage[style=apa]{biblatex}
+%\addbibresource{referencias.bib}
+
+
+
+% Adicionar quebra de página antes de cada seção
+\AddToHook{cmd/section/before}{\clearpage}
+
+% definir fontes segundo padroes enap
+%\setmainfont{Trebuchet MS}
+\setsansfont{Times New Roman}
+\newfontface\tbBold{Times New Roman-Bold}
+
+% estilo da capa do relatório
+\definecolor{corTextoCapa}{HTML}{FFFFFF}
+\definecolor{corTitulo}{HTML}{46291c}
+\definecolor{corSubsDois}{HTML}{000000} % Preto
+
+
+% Estilos globais do doc
+\allsectionsfont{\color{corSubsDois}}
+\sectionfont{\textbf{\color{corSubsDois}}}
+%\sectionfont{\color{corSubsDois}}
+%\subsectionfont{\color{corSubsDois}}
+%\subsubsectionfont{\color{corSubsDois}}
+%\paragraphfont{\color{corSubsDois}\bfseries}
+%\subparagraphfont{\color{corSubsDois}\bfseries}
+
+\setlength{\parindent}{1.5em} % Recuo de parágrafo
+\setlength{\parskip}{1.5pt} % Sem espaço adicional entre parágrafos
+\linespread{1.5} % Espaçamento entre linhas
+
+% Margens
+\geometry{a4paper, top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm}
+
+% add a imagem de background na página da capa (template vazio)
+\backgroundsetup{
+  scale=1,
+  angle=0,
+  position=current page.center,
+  vshift=0pt,
+  hshift=0pt,
+  contents={\includegraphics[width=1.0\paperwidth, height=1.0\paperheight]{modelostex/CAPA_PROVISORIA.pdf}}
+}
+
+
+% Estilos específicos da CAPA (EDITAR titulo, autor e data da CAPA AQUI)
+\renewcommand{\familydefault}{\sfdefault}
+\renewcommand{\maketitle}{
+  \begin{titlepage}
+    \newgeometry{top=5cm, bottom=5cm, left=4cm, right=4cm}
+    %\pagecolor{corFundoCapa}
+    \color{corTextoCapa}
+    \centering
+
+    %Espaço vertical ajustado para o título
+    \vspace*{4em}
+    \Huge{\textbf{\textsf{\textcolor{corTitulo}{}}}} % Ajuste para usar \@title para o título
+
+    % Espaço vertical para o autor
+    \vfill
+    \Large{\textbf{\textsf{\textcolor{corTitulo}{\@}}}} % Ajuste para usar \@author para o autor
+    \vspace{3em}
+
+    % DATA
+    \Large{\textbf{\textsf{\textcolor{corTitulo}{\@}}}}
+
+    \restoregeometry
+    \pagecolor{white}\color{black}
+    \clearpage
+  \end{titlepage}
+
+
+% Definição da cor do título do TOC P/ QUE ACOMPANHE VERDE
+\definecolor{tocTitleColor}{HTML}{000000}  % Defina a cor desejada
+
+% Estilo do título do Toc
+\renewcommand{\cfttoctitlefont}{\color{tocTitleColor}\Huge\bfseries}
+
+% Ajustar a distância entre o título do Toc e 1å seção
+\setlength{\cftaftertoctitleskip}{50pt}
+
+% retirar as bolinhas entre o texto e o número da página no toc
+%\renewcommand{\cftdot}{}
+
+% Alinhar o TOC à esquerda e ajustar espaçamento
+%\renewcommand{\cftsecindent}{0pt} % Remove a indentação das seções
+%\renewcommand{\cftsubsecindent}{0pt} % Remove a indentação das subseções
+%\renewcommand{\cftsubsubsecindent}{0pt} % Remove a indentação das subsubseções
+
+\renewcommand{\cftsecnumwidth}{1em} % Reduz o espaço entre o número da seção e o título
+\renewcommand{\cftsubsecnumwidth}{2em} % Para subseções
+\renewcommand{\cftsubsubsecnumwidth}{3em} % Para subsubseções
+\newcommand{\cftparagraphnumwidth}{4em} % Para paragrafos
+\newcommand{\cftsubparagraphnumwidth}{5em} % Para sub-paragrafo
+
+% Ajustar o espaçamento entre os itens do TOC
+\setlength{\cftbeforesecskip}{20pt} % Espaçamento antes das seções
+\setlength{\cftbeforesubsecskip}{5pt} % Espaçamento antes das subseções
+\setlength{\cftbeforesubsubsecskip}{5pt} % Espaçamento antes das subsubseções
+
+% Definição de comandos para seções adicionais no TOC (subsub, paragrafo e subparagrafo caso existam)
+\newcommand{\cftparagraphpagefont}{\color{corSubsDois}\normalsize\bfseries}
+\newcommand{\cftsubparagraphpagefont}{\color{corSubsDois}\normalsize\bfseries}
+\newcommand{\cftparagraphfont}{\color{corSubsDois}\normalsize\bfseries}
+\newcommand{\cftsubparagraphfont}{\color{corSubsDois}\normalsize\bfseries}
+
+% Aplicar a formatação do texto aos números das páginas no TOC (subsub, paragrafo e subparagrafo caso existam)
+\renewcommand{\cftsecpagefont}{\color{corSubsDois}\large\bfseries}  % H1
+\renewcommand{\cftsubsecpagefont}{\color{corSubsDois}\normalsize} % H2
+\renewcommand{\cftsubsubsecpagefont}{\color{corSubsDois}\normalsize}  % H3
+\renewcommand{\cftparagraphpagefont}{\color{corSubsDois}\normalsize} % H4
+\renewcommand{\cftsubparagraphpagefont}{\color{corSubsDois}\normalsize} % H5
+
+% Estilo No TOC (subsub, paragrafo e subparagrafo caso existam)
+\renewcommand{\cftsecfont}{%\color{corFundoCapa}
+\large\bfseries}  % Estilo do H1
+\renewcommand{\cftsubsecfont}{\color{corSubsDois}\normalsize} % Estilo do H2
+\renewcommand{\cftsubsubsecfont}{\color{corSubsDois}\normalsize}  % Estilo do H3
+\renewcommand{\cftparagraphfont}{\color{corSubsDois}\normalsize} % Estilo do H4
+\renewcommand{\cftsubparagraphfont}{\color{corSubsDois}\normalsize} % Estilo do H5
+
+% Define formatacao personalizada para seções - aqui ja é do documento qmd e nao do TOC especificamente
+\titleformat{\section}
+  {\normalfont\Huge\bfseries\color{corSubsDois}} % Formatação do título da seção
+  {\thesection} % Número da seção
+  {0.5\baselineskip} % Espaço entre o número e o título
+  {\textbf{\huge}} % Formatação do título da seção
+  [\vspace{1.5ex}] % Espaço após o número e antes do título
+
+% Define formatacao personalizada para subsecs
+\titleformat{\subsection}
+  {\normalfont\Large\bfseries\color{corSubsDois}} % Formatação do título da subseção
+  {\textbf{\thesubsection}} % Número da subseção
+  {1ex} % Espaço entre o número e o título
+  {\textbf{\Large}} % Formatação do título da subseção
+  [\vspace{1ex}] % Espaço após o número e antes do título
+
+
+% Define formatacao personalizada para subsubsecs
+\titleformat{\subsubsection}
+  {\normalfont\large\color{corSubsDois}} % Formatação do título da subsubseção
+  {\thesubsubsection} % Número da subsubseção
+  {1ex} % Espaço entre o número e o título
+  {\normalsize\bfseries} % Formatação do título da subsubseção
+  [\vspace{0.5ex}] % Espaço após o número e antes do título
+
+% Define formatacao personalizada para paragrafos
+\titleformat{\paragraph}
+  {\normalfont\normalsize\tbBold\color{corSubsDois}} % Formatação do título do parágrafo
+  {\theparagraph} % Número do parágrafo
+  {1ex} % Espaço entre o número e o título
+  {} % Formatação do título do parágrafo
+  [\vspace{0.5ex}] % Espaço após o número e antes do título
+
+% Define formatacao personalizada para subparagrafos
+\titleformat{\cftsubparagraph}
+  {\normalfont\normalsize\tbBold\color{corSubsDois}} % Formatação do título do subparágrafo
+  {\textbf{\normalsize\textcolor{corSubsDois}{\arabic{subparagraph}}}} % Número do subparágrafo
+  {1ex} % Espaço entre o número e o título
+  {} % Formatação do título do subparágrafo
+  [\vspace{0.5ex}] % Espaço após o número e antes do título
+
+% Configurar cabeçalhos e rodapés
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[R]{\thepage} % Fonte e cor da numeração das páginas
+
+% Configuração para numeração romana e arábica
+\newcommand{\setRomanPageNumbering}{
+  \pagenumbering{roman}
+}
+
+\newcommand{\setArabicPageNumbering}{
+  \clearpage
+  \pagenumbering{arabic}
+}
+
+% remover a linha horizontal no cabeçalho do fancy que estava confligando comimagem de fundo
+\renewcommand{\headrulewidth}{0pt}
+\setArabicPageNumbering
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=corTitulo
+}
+}
+
+
+

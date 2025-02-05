@@ -1,0 +1,16 @@
+% Adicionar imagem de background na página do índice
+% Parâmetro HSHIFT: altera a centralização(horizontal) da linha verde do template (ajustei)
+% Parâmetro VSHIFT: altera a centralização(vertical) da linha verde do template (aqui
+% Não alterei pq a distância da linha verde à margem superior está 100% de acordo com
+% o template da Samy)
+
+\backgroundsetup{
+  scale=1,
+  color=green,
+  opacity=3.5,
+  angle=0,
+  position=current page.center,
+  vshift=15pt,
+  hshift=0pt,
+  contents={\includegraphics[width=1.01\paperwidth, height=1.01\paperheight]{modelostex/Empty_Texto.png}}
+}

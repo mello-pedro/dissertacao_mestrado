@@ -1,0 +1,36 @@
+graph TD
+    A[**Extrair dados textuais**
+        Website EVG / API Google Books] --> B[Inserir dados em Banco de Dados relacional PostgreSQL]
+    B --> C[Carregar Dados]
+    C --> D{Técnica de Vetorização}
+    D -->|TF-IDF| E1[Pré-processamento Textual]
+    D -->|SBERT| E2[Pré-processamento Textual Simplificado]
+    E1 --> F1[Gerar vetores TF-IDF]
+    E2 --> F2[Gerar Embeddings SBERT em Batches]
+    F1 --> G1[Calcular Similaridade entre vetores esparsos gerados]
+    F2 --> G2[Calcular Similaridade entre vetores densos gerados]
+    G1 --> H[Armazenar Matriz de Similaridade]
+    G2 --> H
+    H --> I[Receber ID único do Item-Alvo]
+    I --> J{ID existe?}
+    J -->|Sim| K[Recuperar Embedding do Item-Alvo]
+    J -->|Não| L[Erro: ID não encontrado]
+    K --> M[Calcular Similaridades com Todos os Itens]
+    M --> N[Ordenar por Score de Similaridade]
+    N --> O[Filtrar Top-N Recomendações]
+    O --> P[Exibir Resultados]
+    
+    style A fill:#4CAF50,stroke:#388E3C,color:#FFFFFF
+    style B fill#2196F3,stroke#1976D2
+    style C fill#2196F3,stroke#1976D2
+    style D fill:#FFFF00,stroke#FFFF00,color:#000000
+    style E1 fill#E91E63,stroke#C2185B
+    style E2 fill#E91E63,stroke#C2185B
+    style F1 fill#9C27B0,stroke#7B1FA2
+    style F2 fill#9C27B0,stroke#7B1FA2
+    style G1 fill#FF5722,stroke#E64A19
+    style G2 fill#FF5722,stroke#E64A19
+    style H fill#607D8B,stroke#455A64
+    style J fill:#FF5722,stroke#FF5722
+    style L fill:#FF0000,stroke#D32F2F
+    style P fill:#4CAF50,stroke:#388E3C,color:#FFFFFF

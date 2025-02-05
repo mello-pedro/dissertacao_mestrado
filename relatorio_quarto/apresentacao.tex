@@ -1,0 +1,9 @@
+% PDF com expediente
+\newpage
+\thispagestyle{empty}
+\begin{tikzpicture}[overlay, remember picture]
+    \node[anchor=center, inner sep=0pt, outer sep=0pt] at (current page.center) {
+        \includegraphics[width=1 \paperwidth, height=1 \paperheight]{modelos/apresentacao-click.pdf}
+    };
+\end{tikzpicture}
+\newpage
