@@ -414,7 +414,7 @@ a) **Dataset "Cursos"**
 ```{python}
 #| output: asis
 #| label: tbl-cursos-tail
-#| tbl-cap: Amostra de 5 linhas e 5 colunas da tabela de cursos
+#| tbl-cap: Amostra de 10 linhas e 5 colunas da tabela de cursos
 #| tbl-pos: H
 #| tbl-width: 3
 #Importando os dados das capacitacoes
@@ -425,7 +425,7 @@ df = pd.read_csv('/Users/pedroh.mello/Desktop/MESTRADO_MCDE/SEMINARIO/PROJETO_CO
 
 df_text = df[['id_curso', 'nome_curso', 'apresentacao', 'conteudo_programatico']].copy()
 
-df_text.tail(5)
+df_text.tail(10)
 ```
 
 
@@ -437,7 +437,6 @@ Isto posto, o dataset da EVG foi escolhido devido à riqueza de informações te
 - id_curso: Inteiro, Identificador único do curso na plataforma;
 - nome_curso: *String*, Título da capacitação;
 - eixos_tematicos: *String*, Sub-divisão do eixo ao qual a capacitação pertence;
-{{< pagebreak >}}
 - competencias: *String*, Competencias profissionais abrangidas pela capacitação;
 - certificador: *String*, Ente responsável pela plaicação do curso;
 - conteudista: *String*, Ente repsonsável pela elaboração dos conteúdos do curso;
@@ -455,35 +454,115 @@ Isto posto, o dataset da EVG foi escolhido devido à riqueza de informações te
 Dado que o sistema de recomendação é inteiramente baseado em dados textuais (strings), colunas numéricas como carga horária, disponibilidade do curso e data de lançamento foram descartadas, pois não agregam valor semântico relevante. Além disso, seu uso poderia introduzir ruídos desnecessários no modelo, prejudicando a qualidade das recomendações.
 
 Entre as features textuais, foram selecionadas apenas aquelas que fornecem informações extensas e únicas sobre os cursos: nome, apresentação e conteúdo programático. Essas colunas contêm descrições detalhadas sobre os temas abordados, facilitando a identificação de palavras-chave e relações semânticas. A coluna nome_curso, por sua vez, foi utilizada apenas para identificar cada capacitação em conjunto com seu respectivo ID.
+
+Por fim, visando aproximar-se ao máximo de um ambiente de produção real em que os dados de input utilizados na emissão das recomendações estarão armazenados em algum tipo de *database*, as informações dos cursos foram armazenadas em um banco de dados relacional PostgreSQL, tendo sido utilizada a linguagem python e as bibliotecas psycopg2-binary e pandas para conexão com o banco e ingestão dos dados.
 {{< pagebreak >}}
 
 b) **Dataset "Livros"**
 
+O segundo e mais volumoso dataset utilizado para desenvolver e testar os sistemas de recomendação traz informações sobre mais de 29.000 obras literárias em Português-BR e seus campos foram extraídos por meio de consumo da API (Google Books)[https://www.googleapis.com/books/v1/] com uso da linguagem *Python* e das bibliotecas *Requests* e Pandas. Assim como o antecessor, este conjunto de dados traz consigo um campo textual em específico que possui grande relevância para o desenvolvimento deste projeto: A coluna de descrição do livro.
+
+> - Processo de obtenção dos dados:
+
+::: {#fig-funcao-api}
+![](imgs/API_GOOGLE.png){width=70%}
+
+ **Exemplo de função para extração da API Google Books com uso de Python**
+:::
+
+> O processo para extração destes dados, no entanto, não fora tão simples e direto como aquele percorrido para o dataset anterior. A API do google books tem suas requisições baseadas no código ISBN que identifica cada livro, conforme demonstrado na @fig-funcao-api. Logo, foi necessário um trabalho preliminar de pesquisa para localizar uma lista com todos os ISBNs disponíveis, a qual fora encontrada e extraída em formato .parquet na plataforma (Hugging Face)[https://huggingface.co/datasets/P1ayer-1/isbndb-full-database/tree/main/data], para só então adaptar a função em python para iterar sobre esta lista e construir o dataframe com os dados consolidados.
+
+> Ocorre que mostrou-se inviável encaminhar requisições à API Google Books para todos os ISBNs listados, pois excederia o limite de requisições definida na documentação da ferramenta, além de gerar custos de processamento e armazenamento desnecessários, pois a maior parte daqueles dados não interessam ao projeto. Soma-se a isso o fato de que, conforme evidenciado na @fig-funcao-api, muitos dos identificadores presentes na lista retromencionada diziam respeito a obras em outras línguas que não a língua portuguesa, o que não era desejável uma vez que o cerne deste projeto é desenvolver sistemas de recomendação adaptados à língua portuguesa.
+
+> Isto posto, a estratégia utilizada para solucionar os problemas apontados anteriormente foi utilizar a biblioteca *langdetect*, desenvolvida pelo Google originalmente em java e adaptada em sua integralidade para python, a qual detecta automaticamente, baseando-se no título textual do livro associado ao seu código ISBN, a linguagem a qual aquela obra dizia respeito. Após a sua aplicação, a lista de ISBNs que anteriormente possuía 28 milhões de entradas, passou a conter pouco mais de 100.000 entradas. 
+
 ```{python}
 #| output: asis
 #| label: tbl-livros-head
-#| tbl-cap: Amostra de 5 linhas da tabela de livros
+#| tbl-cap: Amostra de 10 linhas da tabela de livros
 #| tbl-pos: H
 #| tbl-width: 3
 #Importando os dados das capacitacoes
 
 ## Carregando dataset com os dadosda base do google books.
-pd.set_option('display.max_colwidth', 30)
+pd.set_option('display.max_colwidth', 25)
 df_books = pd.read_csv('/Users/pedroh.mello/Desktop/MESTRADO_MCDE/SEMINARIO/PROJETO_CONCLUSAO_MESTRADO/data/books_data_ph.csv')
 
 df_books_text = df_books[["isbn","title","authors","description"]]
-df_books_text.head(5)
+df_books_text.head(10)
 ```
 
+> Por conseguinte, os dados foram efetivamente extraídos do google books apenas para os ISBNs de interesse tendo sido transformados e limpos com uso da linguagem SQL e inseridos em uma nova tabela denominada "livros", armazenada no mesmo database onde já estava a tabela de cursos, de modo a centralizar a fonte de dados e padronizar o uso do método "carrega_dados" para ambas as tabelas na classe Recommender, a qual será analisada a seguir. A @tbl-livros-head traz uma amostra da composição final da tabela de livros.
+
+### Medida de Similaridade: A similaridade do Cosseno e pq utiliza-la.
+
+EXPLICAR A RESPEITO COM EXEMPLO VISUAL E DIZER QUE PERFORMOU MELHOR SE COMPARADA A DISTANCIA EUCLIDEANA E OUTRA (JACCARD, TALVEZ)
+
+### Construção das engines de recomendação: Desenvolvimento das Classes TfidfRecommender e SBERTRecommender 
+Após a obtenção dos dados passou-se à construção efetiva dos sistemas de recomendação. Optou-se mais uma vez pelo uso da linguagem de programação python e do paradigma de orientação a objetos para facilitar a manutenção, organização e reutilização dos códigos fonte dos sistemas de recomendação. Foram implementadas duas classes distintas – TfidfRecommender e SBERTRecommender –, cada uma encapsulando o fluxo completo de seu respectivo algoritmo.
+
+A partir deste momento, cada sistema de recomendação será analisado separadamente, dado que a natureza dos métodos utilizados para a extração e representação dos vetores difere significativamente entre eles. Inicialmente, será apresentada a implementação do modelo baseado em TF-IDF, uma abordagem mais tradicional e rudimentar para recomendação textual. Em seguida, será detalhada a construção do modelo baseado em SBERT e *transformers*, que utiliza representações semânticas mais avançadas para capturar significados contextuais nos textos. 
+
+- **TfidfRecommender**
+
+::: {#fig-funcao-api}
+![](imgs/classe_tfidf.png){width=90%}
+
+ **Construtor da Classe TfidfRecommender**
+:::
+
+  - Bibliotecas e versão do Python utilizadas:
+    - **Python 3.12.3**
+    - Pandas: Manipulação e estruturação dos dados em DataFrames.
+    - re: Expressões regulares para limpeza e pré-processamento de texto.
+    - nltk: Utilizado para processamento de linguagem natural, especialmente remoção de stopwords no caso em tela.
+    - Sqlalchemy: Criação de conexão com banco de dados PostgreSQL para consulta dos dados.
+    - Sklearn: Inicialização do tfidf, conversão de textos em vetores numéricos e cálculo da similaridade do cosseno via função linear_kernel.
+
+  - Parâmetros ao instanciar a classe:
+    - **DB_USER, DB_PASS, DB_NAME, DB_HOST:** Dados relativos ao banco de dados onde as informações relevantes para desenvolvimento do modelo encontram-se.
+    - **emb_cols:** Colunas textuais que serão utilizadas como fonte de informação para o modelo. Este é o parâmetro mais importante, vez que aqui o opoerador deve apontar aquelas fetaures de interesse no dataset que serão compiladas e servirão de base para extração dos vetores de representação textual.
+    - **id_col:** Coluna na base de dados que contém a informação a respeito do identificador úncio de cada item a ser processado e recomendado.
+    - **item_name_col:** Coluna que contém o título/nome do item a ser processado e recomendado adiante. Importante pois seu texto será adicionado às ifnromações das colunas de emb_cols com vistas a maximizar os dados textuais sobre cada um dos itens.
+    - **stopwords_extra:** Faculta ao opoerador do sistema de recomendação a opção de adicionar ainda mais stopwords à etapa de limpeza textual que façam sentido para aquele domínio específico, as quais serão adicionadas às stopwords previamente definidas pela biblioteca nltk e aplicadas à etapa de limpeza textual.
 
 
-## Medida de Similaridade: A similaridade do Cosseno e pq utiliza-la.(EM METODOLOGIA)
+
+    DEMONSTRAR EXEMPLO VISUAL DA TABELA COM COLUNA DO NOME / COLUNA DA APRESENTAÇAO / COLUNA COMPILADO TEXTUAL JUNTANDO TUDO
+
+
+    DEMONSTRAR EXEMPLO VISUAL DA MATRIZ TFIDF GERADA PELO SKLEARN E EXPLICAR O QUE REPRESENTAM AS LINHAS E AS COLUNAS.
+
+    FRISAR O TAMANHO (LINHAS X COLUNAS) DA MATRIZ GERADA E COMO ISSO É OTIMIZADO NO SISTEMA BASEADO EM SBERT COM OS VETORES DENSOS DE 384 DIMENSOES, DESTACANDO A FACILIDADE AINDA DE SE INSERIR OUTROS MODELOS DE GERAÇÃO DE MEBEDDINGS COM MAIS DIMENSOES, MAIS CONTEXTO PORÉM MAIOR DEMANDA DE PROCESSMANETO.
+  
+  - Método "carrega_dados()": 
+    - Argumento(s) necessários: Nome da tabela no banco de dados que será utilizada como fonte de extração de texto para o modelo; 
+    - Este método é responsável pela abertura do banco de dados relacional e carregamento das colunas textuais de interesse para o modelo. Utiliza-se para tanto os dados das features inseridos pelo operador ao instanciar a classe TfidfRecommender(emb_cols + item_name_col).
+  
+  - Método "_limpar_e_compilar_texto()":
+
+  INSERIR EXEMPLO PARECIDO COM O DA FIGURA '/Users/pedroh.mello/Desktop/Captura de Tela 2025-02-09 às 22.08.28.png'
+
+   - Executa a etapa de limpeza e preparação dos dados textuais das colunas que serão vetorizadas. Por se tratar do sistema de recomendação baseado em tfidf, o qual requer minuciosa etapa de limpeza dos dados para evitar-se redundâncias e ruídos que sobrecarreguem o sistema ao estender em demasia o vocabulário*(*bag-of-words*), aplicam-se aos dados as seguintes transformações: Remoção de acentos, sinais de pontuação e caracteres especiais; Alteração para que todas as palavras estejam em letras minúsculas; Remoção das stopwords pré-definidas pela biblioteca nltk + stopwords definidas pelo operador em stopwords_extra, se houverem; Junção do texto de todas as colunas textuais apontadas pelo operador em uma coluna chamada "compilado textual", a qual trará o texto do nome do item + o texto das demais colunas referentes ao texto de apresentação, eventual conteúdo programático e descrição. Esta coluna será utilizada como base para extração dos vetores que descrevem aquele item na matriz tfidf.
+  
+- Método "gerar_vetores()":
+ - Recebe os dados da coluna "compilado_textual" limpos e compilados e aplica sobre eles o método tfidf_vectorizer da biblioteca scikit-learn, de modo a transformá-los nos vetores de representação textual numéricos que serão utilizados como base para a etapa de aplicação da similaridade do cosseno e posterior extração das recomendações;
+ - 
+    
+
+
 
 Segundo , é salutar ressaltar que...
 
 # Apresentação dos Resultados
 
+DIVIDIR EM 2: PRIMEIRO, RESULTADOS APÓS APLICAÇAO AO DATASET DE CURSOS (MENOR VOLUME); SEGUBNDO, RESULTADOS APOS APLICAÇAO AO DATASET DE LIVROS(MAIS VOLUMOSO E COMPLEXO); DETALHAR MINUCIOSAMWNTE A DIFERENCA NA CASPTAÇAO DE CONTEXTO, TEMPO DE PROCESSMANETO PARA AMBAS AS ABORDAGENS ETC.
+
+# USE CASE:
+CITAR RAPIDAMENTE APLICAÇÃO NA EXTRAÇÃO DE RECOMENDAÇOES PARA PNDP. RESSALTAR ECONOMIA DE RECURSOS E GANHO DE EFICIENCIA.
+
 # Conclusão e Investigação Futura
+DIZER SOBRE USO DE VECTOR DATABASES PARA ARMAZENAR EMBEDDINGS E GANHAR TEMPO; INSERÇAO DE TRESHOLD MINIMO DE SIMILARIDADE DO COSSENO 
 
 # Bibliografia
 

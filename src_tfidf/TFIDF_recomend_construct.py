@@ -8,26 +8,34 @@ from sklearn.metrics.pairwise import linear_kernel
 from tqdm import tqdm
 
 class TfidfRecommender:
-    def __init__(self, DB_USER, DB_PASS, DB_NAME, DB_HOST, emb_cols, id_col: str, item_name_col: str, stopwords_extra=None):
+    def __init__(self, DB_USER, 
+                 DB_PASS, 
+                 DB_NAME, 
+                 DB_HOST, 
+                 emb_cols, 
+                 id_col: str, 
+                 item_name_col: str, 
+                 stopwords_extra=None):
         self.DB_USER = DB_USER
         self.DB_PASS = DB_PASS
         self.DB_HOST = DB_HOST
         self.DB_NAME = DB_NAME
         self.engine = create_engine(f'postgresql://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:5432/{self.DB_NAME}')
 
-        ##chama cols que serao usadas p/ extrair texto p/ vetores de embeddings
+        ##cols que serao usadas p/ extrair texto p/ vetores de embeddings
         self.emb_cols = emb_cols
         self.id_col = id_col
         self.item_name_col = item_name_col
         self.stop_words = set(stopwords.words('portuguese'))
+
         # add stopwords personalizadas se fornecidas como argumento
         if stopwords_extra is not None:
             self.stop_words.update(stopwords_extra)
         
-        #self.tfidf_vectorizer = TfidfVectorizer(stop_words=list(self.stop_words))
+        #Inicialização do Tfidf
         self.tfidf_vectorizer = TfidfVectorizer()
-
-        # Dados e embeddings
+        
+        # Dados e manipulação dos vetores
         self.df_text = None
         self.embeddings = None
         self.cosine_sim = None
