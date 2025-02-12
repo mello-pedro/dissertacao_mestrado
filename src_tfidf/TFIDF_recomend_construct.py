@@ -95,6 +95,8 @@ class TfidfRecommender:
             pbar.update(1)
         
         print(f"Shape da matriz TF-IDF: {self.tf_matrix.shape}")
+        print("🔍 Trecho da matriz TF-IDF:")
+        print(self.tf_matrix)
         
         # Adiciona a barra de progresso para o cálculo da similaridade do cosseno
         with tqdm(total=1, desc="Calculando similaridade do cosseno") as pbar:
@@ -102,10 +104,11 @@ class TfidfRecommender:
             pbar.update(1)
         
         print(f"Shape da matriz de similaridade do cosseno: {self.cosine_sim.shape}")
-        
+        print("🔍 Trecho da matriz de similaridade do cosseno:")
+        print(self.cosine_sim)
+
         self.indice = pd.Series(self.df_text.index, index=self.df_text[self.id_col])
         print("Embeddings TF-IDF gerados com sucesso!\n")
-
     
     def recomendar(self, id_item, top_n=3):
         """Recomenda itens similares com base no ID do item de entrada."""

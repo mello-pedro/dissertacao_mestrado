@@ -246,10 +246,44 @@ b) **"PLN é incrível"**
 O Count-Vectorizer representaria as sentenças como:
 <br>
 
-|             | Eu | gosto | de | PLN | é | incrível |
-|-------------|----|-------|----|-----|---|----------|
-| Documento a | 1  | 1     | 1  | 1   | 0 | 0        |
-| Documento b | 0  | 0     | 0  | 1   | 1 | 1        |
+```{python}
+#| output: asis
+#| label: tbl-countvec
+#| tbl-cap: Resultado da Vectorização com CountVectorizer
+#| tbl-pos: H
+#| tbl-width: 5
+import pandas as pd
+
+# Criando o DataFrame
+data = {
+    "": ["Documento a", "Documento b"],
+    "Eu": [1, 0],
+    "gosto": [1, 0],
+    "de": [1, 0],
+    "PLN": [1, 1],
+    "é": [0, 1],
+    "incrível": [0, 1]
+}
+
+df = pd.DataFrame(data)
+
+# Gerar a tabela LaTeX com formatação
+latex_table = df.to_latex(
+    index=False, 
+    escape=False, 
+    column_format="|l|c|c|c|c|c|c|", 
+    header=True
+)
+
+# Ajustar bordas da tabela
+latex_table = latex_table.replace("\\toprule", "\\hline")
+latex_table = latex_table.replace("\\midrule", "\\hline")
+latex_table = latex_table.replace("\\bottomrule", "\\hline")
+latex_table = latex_table.replace("\\\\\n", " \\\\\n\\hline\n")  # Adiciona linhas horizontais entre as linhas
+
+# Exibir a tabela no formato LaTeX
+print(latex_table)
+```
 
 Apesar de ser simples e de fácil implementação, as desvantagens desta abordagem são muitas, dentre as quais destacam-se: Alta sensibilidade a ruídos e ortografia, não captação de contexto, ordem das frases e relação entre palavras, alta dimensionalidade dos dados a depender do tamanho do vocabulário, geração de matrizes esparsas e a importância exacerbada dada às palavras mais frequentes em detrimento das menos frequentes, problema este que ensejou o desenvolvimento da próxima técnica a ser citada neste trabalho;
 
@@ -310,11 +344,48 @@ $$
 
 A seguir uma tabela exemplificativa desta técnica:
 
-| Documento  | Texto                           | TF (palavra "dados") | IDF ("dados") | TF-IDF ("dados") |
-|------------|---------------------------------|----------------------|--------------|------------------|
-| **D1**     | "Análise de dados é essencial" | 1/4 = 0.25           | log(3/2)     | 0.25 × log(3/2)  |
-| **D2**     | "Os dados precisam ser limpos" | 1/5 = 0.20           | log(3/2)     | 0.20 × log(3/2)  |
-| **D3**     | "Limpeza de dados e análise"   | 1/5 = 0.20           | log(3/2)     | 0.20 × log(3/2)  |
+```{python}
+#| output: asis
+#| label: tbl-tfidf
+#| tbl-cap: Resultado da Vectorização com TFIDF
+#| tbl-pos: H
+#| tbl-width: 5
+import numpy as np
+
+# Dados da tabela corrigidos
+data = {
+    "Documento": ["D1", "D2", "D3"],
+    "Texto": [
+        "Análise de dados estruturados",
+        "Os dados precisam ser limpos",
+        "Técnicas de transformação e normalização"
+    ],
+    "TF ('dados')": [0.25, 0.20, 0.00],  # Corrigido o valor de TF para D1
+    "IDF ('dados')": [np.log(3/2), np.log(3/2), np.log(3/2)],  # IDF permanece o mesmo para todos
+    "TF-IDF ('dados')": [0.25 * np.log(3/2), 0.20 * np.log(3/2), 0 * np.log(3/2)]  # Corrigido o valor de TF-IDF para D1
+}
+
+# Criando o DataFrame
+df_tfidf = pd.DataFrame(data)
+
+# Gerar a tabela LaTeX com formatação
+latex_table = df_tfidf.to_latex(
+    index=False, 
+    escape=False, 
+    column_format="|l|p{5cm}|c|c|c|", 
+    header=True
+)
+
+# Ajustar bordas da tabela
+latex_table = latex_table.replace("\\toprule", "\\hline")
+latex_table = latex_table.replace("\\midrule", "\\hline")
+latex_table = latex_table.replace("\\bottomrule", "\\hline")
+latex_table = latex_table.replace("\\\\\n", " \\\\\n\\hline\n")  # Adiciona linhas horizontais entre as linhas
+
+# Exibir a tabela no formato LaTeX
+print(latex_table)
+```
+
 
 Por ser uma das técnicas mais utilizadas nos campos da busca e classificação textual, decidiu-se testar esta técnica no desenvolvimento de um dos sistemas de recomendação deste trabalho, o qual será apresentado na secção da Metodologia.
 
@@ -411,6 +482,7 @@ A etapa inicial do estudo envolve a extração e o armazenamento dos dados textu
 
 a) **Dataset "Cursos"**
 
+
 ```{python}
 #| output: asis
 #| label: tbl-cursos-tail
@@ -419,13 +491,52 @@ a) **Dataset "Cursos"**
 #| tbl-width: 3
 #Importando os dados das capacitacoes
 import pandas as pd
+import textwrap
 ## Carregando dataset com os dadosda base da EVG.
-pd.set_option('display.max_colwidth', 30)
+pd.set_option('display.max_colwidth', 27)
 df = pd.read_csv('/Users/pedroh.mello/Desktop/MESTRADO_MCDE/SEMINARIO/PROJETO_CONCLUSAO_MESTRADO/data/catalogo_cursos_NOVO_2025.csv', sep='|')
 
 df_text = df[['id_curso', 'nome_curso', 'apresentacao', 'conteudo_programatico']].copy()
 
-df_text.tail(10)
+# # Função para escapar caracteres problemáticos no LaTeX
+# def escapar_latex(texto):
+#     if isinstance(texto, str):
+#         return (texto.replace('_', '\\_')
+#                      .replace('%', '\\%')
+#                      .replace('&', '\\&')
+#                      .replace('$', '\\$')
+#                      .replace('#', '\\#')
+#                      .replace('{', '\\{')
+#                      .replace('}', '\\}')
+#                      .replace('^', '\\textasciicircum{}')
+#                      .replace('~', '\\textasciitilde{}'))
+#     return texto
+
+# # Aplicar escape às colunas textuais
+# df_text["id_curso"] = df_text["id_curso"].apply(escapar_latex)
+# df_text["nome_curso"] = df_text["nome_curso"].apply(escapar_latex)
+# df_text["apresentacao"] = df_text["apresentacao"].apply(lambda x: escapar_latex(str(x)) if pd.notna(x) else "")
+# df_text["conteudo_programatico"] = df_text["conteudo_programatico"].apply(lambda x: escapar_latex(str(x)) if pd.notna(x) else "")
+
+# Renomear as colunas para evitar underscores no LaTeX
+df_text = df_text.rename(columns=lambda x: x.replace('_', ' '))
+#df_text.tail(10)
+
+# Gerar a tabela LaTeX com formatação
+latex_table = df_text.head(10).to_latex(
+    index=False, 
+    escape=False,
+    longtable=True, 
+    column_format="|c|c|p{4cm}|p{4cm}|"
+)
+
+# Ajustar bordas da tabela
+latex_table = latex_table.replace("\\toprule", "\\hline")
+latex_table = latex_table.replace("\\midrule", "\\hline")
+latex_table = latex_table.replace("\\bottomrule", "\\hline")
+latex_table = latex_table.replace("\\\\\n", " \\\\\n\\hline\n")  # Adiciona linhas horizontais entre as linhas
+
+print(latex_table)
 ```
 
 
@@ -489,12 +600,53 @@ pd.set_option('display.max_colwidth', 25)
 df_books = pd.read_csv('/Users/pedroh.mello/Desktop/MESTRADO_MCDE/SEMINARIO/PROJETO_CONCLUSAO_MESTRADO/data/books_data_ph.csv')
 
 df_books_text = df_books[["isbn","title","authors","description"]]
-df_books_text.head(10)
+#df_books_text.head(10)
+# Gerar a tabela LaTeX com formatação completa
+latex_table = df_books_text.head(10).to_latex(
+    index=False, 
+    escape=False,
+    longtable=True, 
+    column_format="|c|c|c|p{4cm}|"
+)
+
+# Ajustar bordas da tabela
+latex_table = latex_table.replace("\\toprule", "\\hline")
+latex_table = latex_table.replace("\\midrule", "\\hline")
+latex_table = latex_table.replace("\\bottomrule", "\\hline")
+latex_table = latex_table.replace("\\\\\n", " \\\\\n\\hline\n")  # Adiciona linhas horizontais entre as linhas
+
+print(latex_table)
 ```
 
 > Por conseguinte, os dados foram efetivamente extraídos do google books apenas para os ISBNs de interesse tendo sido transformados e limpos com uso da linguagem SQL e inseridos em uma nova tabela denominada "livros", armazenada no mesmo database onde já estava a tabela de cursos, de modo a centralizar a fonte de dados e padronizar o uso do método "carrega_dados" para ambas as tabelas na classe Recommender, a qual será analisada a seguir. A @tbl-livros-head traz uma amostra da composição final da tabela de livros.
 
-### Medida de Similaridade: A similaridade do Cosseno e pq utiliza-la.
+### Medida de Semelhança: A similaridade do Cosseno e porquê utilizá-la.
+
+Optou-se por adotar no âmbito do presente projeto a similaridade do cosseno como métrica objetiva de aferição da semelhança entre os vetores dos itens, haja vista sua ampla utilização no campo do PLN por ser indiferente à magnitude dos vetores, com foco na comparação da direção destes.
+
+Este parâmetro de similaridade mede o ângulo entre dois vetores em um espaço multidimensional, indicando o grau de similaridade entre eles, ou seja, o quão próximos eles são semânticamente. Esta comparação é fundamental para que, dado determinado item, determine-se quais são os mais próximos a ele e, portanto, mais relevantes, os quais deverão ser recomendados ao usuário.
+
+Considerando os vetores associados às palavras $z$ e $w$ a similaridade do cosseno entre elas pode ser percebida como:
+
+$$
+\text{cos-similarity}(z, w) = \frac{z \cdot w}{\|z\| \|w\|} = \cos(\alpha)
+$$
+
+> onde,
+<br>
+<br>
+
+- $α$ é o ângulo entre as palavras $z$ e $w$.
+<br>
+<br>
+
+
+::: {#fig-cosin-matrix}
+![](imgs/heatmap.png){width=80%}
+
+ **Heatmap das 10 primeiras entradas da matriz de similaridade do cosseno, que possui dimensão total de 807 × 807 para o dataset de cursos.**
+:::
+
 
 EXPLICAR A RESPEITO COM EXEMPLO VISUAL E DIZER QUE PERFORMOU MELHOR SE COMPARADA A DISTANCIA EUCLIDEANA E OUTRA (JACCARD, TALVEZ)
 
@@ -535,19 +687,99 @@ A partir deste momento, cada sistema de recomendação será analisado separadam
 
     FRISAR O TAMANHO (LINHAS X COLUNAS) DA MATRIZ GERADA E COMO ISSO É OTIMIZADO NO SISTEMA BASEADO EM SBERT COM OS VETORES DENSOS DE 384 DIMENSOES, DESTACANDO A FACILIDADE AINDA DE SE INSERIR OUTROS MODELOS DE GERAÇÃO DE MEBEDDINGS COM MAIS DIMENSOES, MAIS CONTEXTO PORÉM MAIOR DEMANDA DE PROCESSMANETO.
   
-  - Método "carrega_dados()": 
+  - Método "carrega_dados": 
     - Argumento(s) necessários: Nome da tabela no banco de dados que será utilizada como fonte de extração de texto para o modelo; 
     - Este método é responsável pela abertura do banco de dados relacional e carregamento das colunas textuais de interesse para o modelo. Utiliza-se para tanto os dados das features inseridos pelo operador ao instanciar a classe TfidfRecommender(emb_cols + item_name_col).
   
-  - Método "_limpar_e_compilar_texto()":
+  - Método "_limpar_e_compilar_texto":
 
-  INSERIR EXEMPLO PARECIDO COM O DA FIGURA '/Users/pedroh.mello/Desktop/Captura de Tela 2025-02-09 às 22.08.28.png'
+  Considerando o fragmento original do texto descritivo do livro "As Mil e Uma Noites", observa-se um exemplo da aplicação do método "_limpar_e_compilar_texto" aos dados ora em comento:
+
+
+  **"O livro apresenta as fábulas das 'Mil e uma Noites', com seu colorido oriental"**
+
+```{python}
+#| output: asis
+#| label: tbl-exem-clean
+#| tbl-cap: Aplicação dos estágios de pré-processamento sobre a frase exemplificativa.
+#| tbl-pos: H
+#| tbl-width: 5
+  import textwrap
+
+  # Função para quebrar texto em linhas menores
+  def quebrar_linha(texto, largura=90):
+      return "\\\\".join(textwrap.wrap(texto, width=largura))  # Usar \\ para LaTeX
+
+  pd.set_option('display.max_colwidth', 100)
+  # Criando o DataFrame diretamente
+  data = {
+      "Etapa de Pré-Processamento": [
+          "Frase Original",
+          "Minúsculas",
+          "Remoção de Acentos",
+          "Remoção de Stopwords",
+          "Remoção de Pontuação Extra"
+      ],
+      "Resultado": [
+          "O livro apresenta as fábulas das 'Mil e uma Noites', com seu colorido oriental",
+          "o livro apresenta as fábulas das 'mil e uma noites', com seu colorido oriental",
+          "o livro apresenta as fabulas das 'mil e uma noites', com seu colorido oriental",
+          "livro apresenta fabulas 'mil e uma noites' colorido oriental",
+          "livro apresenta fabulas mil e uma noites colorido oriental"
+      ]
+  }
+
+  # Aplicando a quebra de linha aos resultados
+  data["Resultado"] = [quebrar_linha(frase) for frase in data["Resultado"]]
+  
+  df = pd.DataFrame(data)
+
+  latex_table = df.to_latex(
+    index=False, 
+    escape=False, 
+    column_format="|l|p{8cm}|"
+)
+
+# Adiciona \hline antes e depois dos dados para garantir as linhas horizontais
+latex_table = latex_table.replace("\\toprule", "\\hline")
+latex_table = latex_table.replace("\\midrule", "\\hline")
+latex_table = latex_table.replace("\\bottomrule", "\\hline")
+
+# Adiciona \hline após cada linha de dados (exceto a última linha para evitar duplicação)
+latex_table = latex_table.replace("\\\\\n", " \\\\\n\\hline\n")
+
+print(latex_table)
+
+```
+
 
    - Executa a etapa de limpeza e preparação dos dados textuais das colunas que serão vetorizadas. Por se tratar do sistema de recomendação baseado em tfidf, o qual requer minuciosa etapa de limpeza dos dados para evitar-se redundâncias e ruídos que sobrecarreguem o sistema ao estender em demasia o vocabulário*(*bag-of-words*), aplicam-se aos dados as seguintes transformações: Remoção de acentos, sinais de pontuação e caracteres especiais; Alteração para que todas as palavras estejam em letras minúsculas; Remoção das stopwords pré-definidas pela biblioteca nltk + stopwords definidas pelo operador em stopwords_extra, se houverem; Junção do texto de todas as colunas textuais apontadas pelo operador em uma coluna chamada "compilado textual", a qual trará o texto do nome do item + o texto das demais colunas referentes ao texto de apresentação, eventual conteúdo programático e descrição. Esta coluna será utilizada como base para extração dos vetores que descrevem aquele item na matriz tfidf.
   
-- Método "gerar_vetores()":
+- Método "gerar_vetores":
  - Recebe os dados da coluna "compilado_textual" limpos e compilados e aplica sobre eles o método tfidf_vectorizer da biblioteca scikit-learn, de modo a transformá-los nos vetores de representação textual numéricos que serão utilizados como base para a etapa de aplicação da similaridade do cosseno e posterior extração das recomendações;
- - 
+ - Calcula a matriz TF-IDF, onde cada linha representa um item (livro ou curso) e cada coluna representa um termo do vocabulário, atribuindo pesos conforme a importância relativa do termo no conjunto de dados. Isso permite que textos com palavras frequentes, mas pouco discriminativas, tenham menos peso, enquanto termos mais raros e relevantes recebam maior influência na representação vetorial.
+ - Utiliza a técnica de linear kernel para calcular a similaridade do cosseno entre os vetores da matriz TF-IDF. Esse cálculo mede o grau de proximidade entre os itens, atribuindo valores entre 0 e 1, onde 1 indica máxima similaridade e 0 indica ausência de relação.
+ - Armazena a matriz de similaridade do cosseno para que ela possa ser utilizada posteriormente no método de recomendação, garantindo que as consultas sejam feitas de forma eficiente sem necessidade de recalcular as similaridades a cada requisição.
+ - Cria um índice (self.indice), que mapeia os identificadores únicos dos itens (id_col) aos seus respectivos índices na matriz de similaridade, permitindo consultas rápidas para recomendações futuras.
+ - Exibe informações sobre a geração dos embeddings, incluindo o shape da matriz TF-IDF e amostras das matrizes TF-IDF e de similaridade do cosseno, para fins de depuração e análise da qualidade das representações vetoriais.
+
+- Método "recomendar":
+ - Responsável por exibir as recomendações de itens mais similares ao item de entrada(input), utilizando a matriz de similaridade do cosseno previamente calculada. Ele recebe um ID de item e retorna os N itens mais similares, com base na proximidade vetorial entre os textos embutidos via TF-IDF.
+ - Em primeira medida, recebe um ID de item e consulta a matriz de similaridade do cosseno previamente gerada para encontrar os itens mais similares ao item de entrada.
+ - A seguir, a partir do ID do item fornecido pelo usuário, o método busca seu índice na matriz TF-IDF utilizando self.indice[id_item]. O nome do item original é recuperado da base de dados (self.df_text) para ser exibido na saída, facilitando a interpretação do usuário.
+ - Obtém a linha correspondente ao item de entrada na matriz de similaridade do cosseno, recuperando os valores de similaridade em relação a todos os outros itens.
+ - Ordena os itens de maneira decrescente quanto à similaridade, garantindo que os mais relevantes apareçam primeiro(remove a própria entrada da lista para evitar que o item recomende a si mesmo devido a similaridade máxima).
+ - Seleciona os $$N$$ itens mais similares, conforme definido pelo usuário, garantindo que a recomendação seja ajustável às necessidades do sistema.
+ - Retorna um DataFrame contendo os IDs, nomes e scores de similaridade dos itens recomendados, de modo a facilitar a análise da qualidade daquilo que foi recomendado como sendo similar ao item de entrada.
+ - Exibe as recomendações de forma estruturada, apresentando o nome do item original e os itens sugeridos com seus respectivos scores.
+
+::: {#fig-funcao-recomend-tfidf}
+![](imgs/FUNC_RECOMEND_TFIDF.png){width=80%}
+
+ **Demonstração da função que extrai as recomendações**
+:::
+
+
     
 
 
@@ -560,6 +792,8 @@ DIVIDIR EM 2: PRIMEIRO, RESULTADOS APÓS APLICAÇAO AO DATASET DE CURSOS (MENOR 
 
 # USE CASE:
 CITAR RAPIDAMENTE APLICAÇÃO NA EXTRAÇÃO DE RECOMENDAÇOES PARA PNDP. RESSALTAR ECONOMIA DE RECURSOS E GANHO DE EFICIENCIA.
+
+INSERIR CAPTURA DE TELA DO APP STREAMLIT DESENVOLVIDO E RESSALTAR A FUNCIONALIDADE DE O GESTOR PODER ALTERAR A SIMILARIDADE DO COSSENO PARA AUMENTAR OU DIMINUIR O RIGOR NA HORA DE RECOMENDAR
 
 # Conclusão e Investigação Futura
 DIZER SOBRE USO DE VECTOR DATABASES PARA ARMAZENAR EMBEDDINGS E GANHAR TEMPO; INSERÇAO DE TRESHOLD MINIMO DE SIMILARIDADE DO COSSENO 
