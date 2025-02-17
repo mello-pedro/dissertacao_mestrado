@@ -13,7 +13,7 @@ toc: true
 lof: true
 lot: true
 toc-title: "Índice"        
-toc-depth: 3               
+toc-depth: 8               
 toc-location: "left"
 format:
   pdf:
@@ -253,6 +253,9 @@ O Count-Vectorizer representaria as sentenças como:
 #| tbl-pos: H
 #| tbl-width: 5
 import pandas as pd
+import numpy as np
+import textwrap
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 # Criando o DataFrame
 data = {
@@ -342,7 +345,12 @@ $$
 
 {{< pagebreak >}}
 
-A seguir uma tabela exemplificativa desta técnica:
+A seguir uma tabela exemplificativa do resultado da aplicação desta técnica em três documentos[^1] diferentes, quais sejam:
+
+
+> - **"1. Este jogador é muito rápido e habilidoso."**
+> - **"2. Este jogador não é rápido mas é habilidoso."**
+> - **"3. Este jogador é talentoso e não é rápido."**
 
 ```{python}
 #| output: asis
@@ -350,29 +358,29 @@ A seguir uma tabela exemplificativa desta técnica:
 #| tbl-cap: Resultado da Vectorização com TFIDF
 #| tbl-pos: H
 #| tbl-width: 5
-import numpy as np
 
-# Dados da tabela corrigidos
-data = {
-    "Documento": ["D1", "D2", "D3"],
-    "Texto": [
-        "Análise de dados estruturados",
-        "Os dados precisam ser limpos",
-        "Técnicas de transformação e normalização"
-    ],
-    "TF ('dados')": [0.25, 0.20, 0.00],  # Corrigido o valor de TF para D1
-    "IDF ('dados')": [np.log(3/2), np.log(3/2), np.log(3/2)],  # IDF permanece o mesmo para todos
-    "TF-IDF ('dados')": [0.25 * np.log(3/2), 0.20 * np.log(3/2), 0 * np.log(3/2)]  # Corrigido o valor de TF-IDF para D1
-}
+# Definição dos documentos
+documentos = [
+    "1. Este jogador é muito rápido e habilidoso.",
+    "2. Este jogador não é rápido mas é habilidoso.",
+    "3. Este jogador é talentoso e não é rápido."
+]
 
-# Criando o DataFrame
-df_tfidf = pd.DataFrame(data)
+# Criar o vetorizador TF-IDF
+vectorizer = TfidfVectorizer()
+
+# Aplicar o TF-IDF
+tfidf_matriz = vectorizer.fit_transform(documentos)
+
+# Criar um DataFrame com os resultados
+df_tfidf = pd.DataFrame(tfidf_matriz.toarray(), columns=vectorizer.get_feature_names_out())
+df_tfidf.index = ["doc1", "doc2", "doc3"]
 
 # Gerar a tabela LaTeX com formatação
 latex_table = df_tfidf.to_latex(
-    index=False, 
+    index=True, 
     escape=False, 
-    column_format="|l|p{5cm}|c|c|c|", 
+    column_format = "|l|c|c|c|c|c|c|c|c|", 
     header=True
 )
 
@@ -386,15 +394,52 @@ latex_table = latex_table.replace("\\\\\n", " \\\\\n\\hline\n")  # Adiciona linh
 print(latex_table)
 ```
 
+[^1]: Documento neste contexto diz respeito à porção total de texto presente em determinada linha do dataframe
 
 Por ser uma das técnicas mais utilizadas nos campos da busca e classificação textual, decidiu-se testar esta técnica no desenvolvimento de um dos sistemas de recomendação deste trabalho, o qual será apresentado na secção da Metodologia.
 
-Entretanto, apesar de ser uma das técnicas de vetorização textual mais importantes no para o PLN ao longo do tempo e de apresentar uma notável evolução no que diz respeito à captação da importância dos termos para o sentido do documento, vez que reduz drasticamente a influência de termos corriqueiros como os artigos e preposições, o TF-IDF ainda possui desvantagens, dentre as quais destacam-se:
+Entretanto, apesar de ser uma das técnicas de vetorização textual mais importantes para o PLN ao longo do tempo e de apresentar uma notável evolução no que diz respeito à captação da importância dos termos para o sentido do documento, vez que reduz drasticamente a influência de termos corriqueiros como os artigos e preposições, o TF-IDF ainda possui desvantagens, dentre as quais destacam-se:
 
-- Não captação de contexto;
+
+- **Não captação de contexto;**
 - Ainda possui elevada sensibilidade a variações ortográficas;
-- A depender da magnitude da base de dados, pode gerar matrizes esparsas que exigem elevado poder computacional para processamento;
+- **Geração de matrizes esparsas, conforme exemplo da @tbl-esparse-tfidf, as quais exigem elevado poder computacional para processamento;**
 - A ideia de que os termos mais frequentes ao longo dos documentos são os menos importantes nem sempre será verdadeira.
+
+```{python}
+#| output: asis
+#| label: tbl-esparse-tfidf
+#| tbl-cap: Amostra de matriz esparsa TFIDF aplicada ao Dataset de Cursos. Cada linha representa um documento(curso) do conjunto de dados, e cada coluna diz respeito a uma palavra do vocabulário.
+#| tbl-pos: H
+#| tbl-width: 5
+
+teste = pd.read_csv("/Users/pedroh.mello/Desktop/MESTRADO_MCDE/SEMINARIO/PROJETO_CONCLUSAO_MESTRADO/data/exemplo_matriz_tfidf.csv")
+# Criando a linha com valores "..."
+separator = pd.DataFrame([["..."] * len(teste.columns)], columns=teste.columns, index=["..."])
+df_head_tail = pd.concat([teste.head(), separator, teste.tail()])
+# df_head_tail
+
+# # Criando o DataFrame
+# df_head_tail = pd.DataFrame(data)
+
+# Gerar a tabela LaTeX com formatação
+latex_table = df_head_tail.to_latex(
+    index=True, 
+    escape=False,
+    longtable=True, 
+    column_format="|l|p{4cm}|c|c|c|c|c|", 
+    header=True
+)
+
+# Ajustar bordas da tabela
+latex_table = latex_table.replace("\\toprule", "\\hline")
+latex_table = latex_table.replace("\\midrule", "\\hline")
+latex_table = latex_table.replace("\\bottomrule", "\\hline")
+latex_table = latex_table.replace("\\\\\n", " \\\\\n\\hline\n")  # Adiciona linhas horizontais entre as linhas
+
+# Exibir a tabela no formato LaTeX
+print(latex_table)
+```
 
 #### Word2Vec: 
 
@@ -426,7 +471,7 @@ Introduzido por @devlin2019bertpretrainingdeepbidirectional, o BERT(*Bidirection
 Ocorre que o BERT, apesar de suas inúmeras vantagens, possui algumas limitações que o tornam menos eficiente para tarefas específicas, como o cálculo de similaridade entre sentenças. Primeiramente, o BERT exige um grande poder de processamento devido à sua arquitetura complexa e ao mecanismo de self-attention, que tem custo computacional quadrático em relação ao comprimento da sequência. Além disso, o BERT não foi concebido originalmente para a tarefa de similaridade entre sentenças, uma vez que sua finalidade precípua é a previsão de palavras ocultas (*Masked Language Modeling*) e a compreensão de relações entre pares de sentenças (*Next Sentence Prediction*). Como resultado, para comparar duas sentenças, o BERT precisa processá-las em conjunto, o que é computacionalmente ineficiente e pode representar um risco para aplicações em larga escala, como sistemas de recomendação.
 
 
-#### Mecanismo de funcionamento do SBERT:
+##### Mecanismo de funcionamento do SBERT:
 
 ::: {#fig-SBERT}
 ![](imgs/SBERT.png){width=80%}
@@ -480,7 +525,7 @@ A @fig-metodo demonstra o fluxo metodológico utilizado ao longo deste projeto. 
 ### Extração dos dados e Datasets utilizados
 A etapa inicial do estudo envolve a extração e o armazenamento dos dados textuais necessários para o desenvolvimento e avaliação dos sistemas de recomendação. Para testar a eficácia dos modelos em diferentes cenários, foram selecionados dois conjuntos de dados distintos: o primeiro, de menor volume, é composto pela matriz de cursos disponíveis no website da Escola Virtual de Governo (EVG); o segundo, significativamente maior, contém livros em língua portuguesa extraídos da API do Google Books. A escolha desses datasets permite avaliar o desempenho dos sistemas tanto em bases reduzidas quanto em conjuntos de dados mais extensos e diversificados.
 
-a) **Dataset "Cursos"**
+a) **Dataset "Cursos"** 
 
 
 ```{python}
@@ -490,8 +535,6 @@ a) **Dataset "Cursos"**
 #| tbl-pos: H
 #| tbl-width: 3
 #Importando os dados das capacitacoes
-import pandas as pd
-import textwrap
 ## Carregando dataset com os dadosda base da EVG.
 pd.set_option('display.max_colwidth', 27)
 df = pd.read_csv('/Users/pedroh.mello/Desktop/MESTRADO_MCDE/SEMINARIO/PROJETO_CONCLUSAO_MESTRADO/data/catalogo_cursos_NOVO_2025.csv', sep='|')
@@ -571,19 +614,19 @@ Por fim, visando aproximar-se ao máximo de um ambiente de produção real em qu
 
 b) **Dataset "Livros"**
 
-O segundo e mais volumoso dataset utilizado para desenvolver e testar os sistemas de recomendação traz informações sobre mais de 29.000 obras literárias em Português-BR e seus campos foram extraídos por meio de consumo da API (Google Books)[https://www.googleapis.com/books/v1/] com uso da linguagem *Python* e das bibliotecas *Requests* e Pandas. Assim como o antecessor, este conjunto de dados traz consigo um campo textual em específico que possui grande relevância para o desenvolvimento deste projeto: A coluna de descrição do livro.
+O segundo e mais volumoso dataset utilizado para desenvolver e testar os sistemas de recomendação traz informações sobre mais de 29.000 obras literárias em Português-BR e seus campos foram extraídos por meio de consumo da API [Google Books](https://www.googleapis.com/books/v1/) com uso da linguagem *Python* e das bibliotecas *Requests* e Pandas. Assim como o antecessor, este conjunto de dados traz consigo um campo textual em específico que possui grande relevância para o desenvolvimento deste projeto: A coluna de descrição do livro.
 
 > - Processo de obtenção dos dados:
 
 ::: {#fig-funcao-api}
-![](imgs/API_GOOGLE.png){width=70%}
+![](imgs/API_GOOGLE.png){width=90%}
 
  **Exemplo de função para extração da API Google Books com uso de Python**
 :::
 
-> O processo para extração destes dados, no entanto, não fora tão simples e direto como aquele percorrido para o dataset anterior. A API do google books tem suas requisições baseadas no código ISBN que identifica cada livro, conforme demonstrado na @fig-funcao-api. Logo, foi necessário um trabalho preliminar de pesquisa para localizar uma lista com todos os ISBNs disponíveis, a qual fora encontrada e extraída em formato .parquet na plataforma (Hugging Face)[https://huggingface.co/datasets/P1ayer-1/isbndb-full-database/tree/main/data], para só então adaptar a função em python para iterar sobre esta lista e construir o dataframe com os dados consolidados.
+> O processo para extração destes dados, no entanto, não fora tão simples e direto como aquele percorrido para o dataset anterior. A API do google books tem suas requisições baseadas no código ISBN que identifica cada livro, conforme demonstrado na @fig-funcao-api. Logo, foi necessário um trabalho preliminar de pesquisa para localizar uma lista com todos os ISBNs disponíveis, a qual fora encontrada e extraída em formato .parquet na plataforma [Hugging Face](https://huggingface.co/datasets/P1ayer-1/isbndb-full-database/tree/main/data), para só então adaptar a função em python para iterar sobre esta lista e construir o dataframe com os dados consolidados.
 
-> Ocorre que mostrou-se inviável encaminhar requisições à API Google Books para todos os ISBNs listados, pois excederia o limite de requisições definida na documentação da ferramenta, além de gerar custos de processamento e armazenamento desnecessários, pois a maior parte daqueles dados não interessam ao projeto. Soma-se a isso o fato de que, conforme evidenciado na @fig-funcao-api, muitos dos identificadores presentes na lista retromencionada diziam respeito a obras em outras línguas que não a língua portuguesa, o que não era desejável uma vez que o cerne deste projeto é desenvolver sistemas de recomendação adaptados à língua portuguesa.
+> Ocorre que mostrou-se inviável encaminhar requisições à API Google Books para todos os ISBNs listados, pois excederia o limite de requisições definida na documentação da ferramenta, além de gerar custos de processamento e armazenamento desnecessários, pois a maior parte daqueles dados não interessam ao projeto. Soma-se a isso o fato de que, conforme evidenciado no output da @fig-funcao-api, muitos dos identificadores presentes na lista retromencionada diziam respeito a obras em outras línguas que não a língua portuguesa, o que não era desejável uma vez que o cerne deste projeto é desenvolver sistemas de recomendação adaptados à língua portuguesa.
 
 > Isto posto, a estratégia utilizada para solucionar os problemas apontados anteriormente foi utilizar a biblioteca *langdetect*, desenvolvida pelo Google originalmente em java e adaptada em sua integralidade para python, a qual detecta automaticamente, baseando-se no título textual do livro associado ao seu código ISBN, a linguagem a qual aquela obra dizia respeito. Após a sua aplicação, a lista de ISBNs que anteriormente possuía 28 milhões de entradas, passou a conter pouco mais de 100.000 entradas. 
 
@@ -618,7 +661,30 @@ latex_table = latex_table.replace("\\\\\n", " \\\\\n\\hline\n")  # Adiciona linh
 print(latex_table)
 ```
 
-> Por conseguinte, os dados foram efetivamente extraídos do google books apenas para os ISBNs de interesse tendo sido transformados e limpos com uso da linguagem SQL e inseridos em uma nova tabela denominada "livros", armazenada no mesmo database onde já estava a tabela de cursos, de modo a centralizar a fonte de dados e padronizar o uso do método "carrega_dados" para ambas as tabelas na classe Recommender, a qual será analisada a seguir. A @tbl-livros-head traz uma amostra da composição final da tabela de livros.
+> Por conseguinte, os dados foram efetivamente extraídos do google books apenas para os ISBNs de interesse tendo sido transformados e limpos com uso da linguagem SQL e inseridos em uma nova tabela denominada "livros", armazenada no mesmo database onde já estava a tabela de cursos, de modo a centralizar a fonte de dados e padronizar o uso do método "carrega_dados" para ambas as tabelas na classe Recommender, a qual será analisada ao fim desta secção. A @tbl-livros-head traz uma amostra da composição final da tabela de livros.
+
+
+### Pré-processamento
+De seguida, procedeu-se à limpeza e transformação dos dados textuais, preparando-os para a vetorização e subsequente inserção nos modelos de recomendação. As minúcias técnicas utilizadas nesta etapa serão expostas na secção que versa sobre a [construção das engines de recomendação](#construção-das-engines-de-recomendação-desenvolvimento-das-classes-tfidfrecommender-e-sbertrecommender). No entanto, de forma geral, a metodologia aplicada na limpeza e transformação da coluna compilado_textual incluiu diversas etapas essenciais para garantir a qualidade e consistência dos dados antes da etapa de vetorização, dentre as quais destacam-se:
+
+- Remoção de stopwords e extensão da lista pré-definida pela biblioteca nltk para abarcar casos específicos identificados durante o processo de exploração dos dados;
+- Normalização para que todas as palavras estivessem em letras minúsculas;
+- Remoção de acentuação gráfica;
+- Remoção de sinais de pontuação e caracteres especiais;
+
+Quanto aos demais métodos de pré-processamento comumente aplicados no âmbito do PLN, como a lematização e o stemming, é importante destacar que, durante os testes exploratórios, tais abordagens não se mostraram eficazes para os conjuntos de dados utilizados. Por esse motivo, optou-se por não incorporá-las nas funções de limpeza dos dados aplicadas às versões finais dos sistemas de recomendação desenvolvidos.
+
+
+### Compilação dos dados
+Após a coleta e processamento dos conjuntos de dados, o próximo passo envolve os processos de extração e engenharia de features. No contexto deste projeto, isso significa selecionar as variáveis mais relevantes para o desenvolvimento dos sistemas de recomendação, além de criar uma nova variável, chamada "compilado_textual", que reunirá as informações textuais mais importantes sobre cada item em ambos os conjuntos de dados.
+
+A criação da feature "compilado_textual", que centraliza as informações textuais essenciais para os sistemas de recomendação, envolveu a agregação das seguintes colunas[^2] para cada conjunto de dados:
+
+- **Cursos:** nome, apresentação e conteúdo programático;
+- **Livros:** título e descrição;
+
+[^2]: A descrição de cada coluna consta no dicionário de variáveis da secção [Extração dos dados e datasets utilizados](#extração-dos-dados-e-datasets-utilizados)
+
 
 ### Medida de Semelhança: A similaridade do Cosseno e porquê utilizá-la.
 
@@ -626,7 +692,7 @@ Optou-se por adotar no âmbito do presente projeto a similaridade do cosseno com
 
 Este parâmetro de similaridade mede o ângulo entre dois vetores em um espaço multidimensional, indicando o grau de similaridade entre eles, ou seja, o quão próximos eles são semânticamente. Esta comparação é fundamental para que, dado determinado item, determine-se quais são os mais próximos a ele e, portanto, mais relevantes, os quais deverão ser recomendados ao usuário.
 
-Considerando os vetores associados às palavras $z$ e $w$ a similaridade do cosseno entre elas pode ser percebida como:
+Considerando os vetores associados às palavras $z$ e $w$, a similaridade do cosseno entre elas pode ser percebida como:
 
 $$
 \text{cos-similarity}(z, w) = \frac{z \cdot w}{\|z\| \|w\|} = \cos(\alpha)
@@ -640,6 +706,12 @@ $$
 <br>
 <br>
 
+Ressalta-se ainda que o valor da similaridade do cosseno para o caso em tela varia entre 0 e 1, onde 1 indica identidade e 0 indica que os vetores são ortogonais(nenhuma relação de similaridade). Destaca-se ainda a natureza não-negativa dos vetores gerados no caso do TFIDF, por exemplo, onde são representadas frequências de palavras ponderadas, o que impede que a similaridade do cosseno seja menor que 0. 
+
+No que tange ao modelo de Sentence Embeddings(SBERT), apesar de ser possível que os vetores de embeddings assumam valores negativos, eles são projetados para captar apenas relações semânticas positivas. Aqui o cálculo da similaridade do cosseno entre esses embeddings é feito em um espaço onde a semântica é representada por proximidade e não por oposição. Ademais, nesta técnica de geração de embeddings os vetores extraídos também são normalizados, a exemplo do que ocorre com o TFIDF, para garantir que a magnitude dos vetores não terá influência sobre a similaridade.
+
+Por conseguinte, a etapa de normalização dos vetores durante a extração destes também tem por escopo garantir que o ângulo entre eles nunca seja superior a 90°, de modo a manter o cosseno restrito ao intervalo entre [0,1].
+
 
 ::: {#fig-cosin-matrix}
 ![](imgs/heatmap.png){width=80%}
@@ -647,17 +719,27 @@ $$
  **Heatmap das 10 primeiras entradas da matriz de similaridade do cosseno, que possui dimensão total de 807 × 807 para o dataset de cursos.**
 :::
 
+A @fig-cosin-matrix traz um exemplo claro do que fora explicitado até aqui: Nela representa-se uma amostra de 10 entradas da matriz de similaridade do cosseno gerada ao comparar-se os vetores de todos os itens entre si, matriz esta que constitui o ponto central dos sistemas de recomendação ora propopostos. É possível observar que determinado item possui identidade (similaridade cosseno = 1) consigo mesmo, e que os valores das similaridade são menores à medida que os comparamos com os demais itens da matriz.
 
-EXPLICAR A RESPEITO COM EXEMPLO VISUAL E DIZER QUE PERFORMOU MELHOR SE COMPARADA A DISTANCIA EUCLIDEANA E OUTRA (JACCARD, TALVEZ)
+#### Outras medidas de similaridade
+
+Embora a similaridade do cosseno tenha sido a métrica adotada no âmbito deste trabalho, outras medidas de distância, como a distância Euclidiana e a distância de Manhattan, são frequentemente utilizadas em tarefas de análise de dados. No entanto, essas métricas podem apresentar limitações significativas no presente contexto de sistemas de recomendação baseados em **vetores de alta dimensionalidade**.
+
+No caso da matriz TFIDF gerada pelo primeiro sistema de recomendação, estamos a lidar com uma matriz esparsa, conforme ilustrado na amostra da @tbl-esparse-tfidf. Para o conjunto de dados menor (cursos), a matriz possui cerca de 7.000 dimensões, enquanto para o conjunto de dados maior (livros), ela ultrapassa as 100.000 dimensões. Isto ocorre porque cada palavra única no vocabulário se transforma numa coluna na matriz. Já para as recomendações baseadas em vectores de embeddings densos gerados pelo modelo SBERT (paraphrase-multilingual-MiniLM-L12-v2), o espaço vetorial é restrito a 384 dimensões. Embora isto seja consideravelmente menor que o espaço TFIDF, ainda pode ser excessivo para métricas que consideram a distância absoluta entre os pontos, em vez de se focarem no ângulo e na direcção entre os vectores.
+
+Isto posto, resta claro que um dos principais desafios no presente contexto diz respeito ao enfrentamento da alta dimensionalidade do espaço vetorial, fenómeno que afeta métricas sensíveis à magnitude dos vetores, como a Euclidiana, mas tende a apresentar impacto reduzido na similaridade do cosseno, que se concentra na orientação relativa dos vetores, conforme discutido por @Aggarwal2001.
+
+Por fim, embora a similaridade do cosseno tenha sido escolhida para extracção dos resultados deste trabalho, serão apresentados, na secção seguinte ("Apresentação dos resultados"), testes comparativos que extraem recomendações para o mesmo item base, utilizando a similaridade do cosseno, a distância Euclidiana e a distância de Manhattan. O objectivo é analisar as principais diferenças nos resultados gerados por estas diferentes abordagens.
+
 
 ### Construção das engines de recomendação: Desenvolvimento das Classes TfidfRecommender e SBERTRecommender 
-Após a obtenção dos dados passou-se à construção efetiva dos sistemas de recomendação. Optou-se mais uma vez pelo uso da linguagem de programação python e do paradigma de orientação a objetos para facilitar a manutenção, organização e reutilização dos códigos fonte dos sistemas de recomendação. Foram implementadas duas classes distintas – TfidfRecommender e SBERTRecommender –, cada uma encapsulando o fluxo completo de seu respectivo algoritmo.
+Após a obtenção e transformação dos dados, passou-se à construção efetiva dos sistemas de recomendação. Optou-se mais uma vez pelo uso da linguagem de programação python e do paradigma de orientação a objetos para facilitar a manutenção, organização e reutilização dos códigos fonte dos sistemas de recomendação. Foram implementadas duas classes distintas – TfidfRecommender e SBERTRecommender –, cada uma encapsulando o fluxo completo de seu respectivo algoritmo.
 
 A partir deste momento, cada sistema de recomendação será analisado separadamente, dado que a natureza dos métodos utilizados para a extração e representação dos vetores difere significativamente entre eles. Inicialmente, será apresentada a implementação do modelo baseado em TF-IDF, uma abordagem mais tradicional e rudimentar para recomendação textual. Em seguida, será detalhada a construção do modelo baseado em SBERT e *transformers*, que utiliza representações semânticas mais avançadas para capturar significados contextuais nos textos. 
 
 - **TfidfRecommender**
 
-::: {#fig-funcao-api}
+::: {#fig-class-tfidf}
 ![](imgs/classe_tfidf.png){width=90%}
 
  **Construtor da Classe TfidfRecommender**
@@ -675,18 +757,9 @@ A partir deste momento, cada sistema de recomendação será analisado separadam
     - **DB_USER, DB_PASS, DB_NAME, DB_HOST:** Dados relativos ao banco de dados onde as informações relevantes para desenvolvimento do modelo encontram-se.
     - **emb_cols:** Colunas textuais que serão utilizadas como fonte de informação para o modelo. Este é o parâmetro mais importante, vez que aqui o opoerador deve apontar aquelas fetaures de interesse no dataset que serão compiladas e servirão de base para extração dos vetores de representação textual.
     - **id_col:** Coluna na base de dados que contém a informação a respeito do identificador úncio de cada item a ser processado e recomendado.
-    - **item_name_col:** Coluna que contém o título/nome do item a ser processado e recomendado adiante. Importante pois seu texto será adicionado às ifnromações das colunas de emb_cols com vistas a maximizar os dados textuais sobre cada um dos itens.
+    - **item_name_col:** Coluna que contém o título/nome do item a ser processado e recomendado adiante. Importante pois seu texto será adicionado às informações das colunas de emb_cols com vistas a maximizar os dados textuais sobre cada um dos itens.
     - **stopwords_extra:** Faculta ao opoerador do sistema de recomendação a opção de adicionar ainda mais stopwords à etapa de limpeza textual que façam sentido para aquele domínio específico, as quais serão adicionadas às stopwords previamente definidas pela biblioteca nltk e aplicadas à etapa de limpeza textual.
 
-
-
-    DEMONSTRAR EXEMPLO VISUAL DA TABELA COM COLUNA DO NOME / COLUNA DA APRESENTAÇAO / COLUNA COMPILADO TEXTUAL JUNTANDO TUDO
-
-
-    DEMONSTRAR EXEMPLO VISUAL DA MATRIZ TFIDF GERADA PELO SKLEARN E EXPLICAR O QUE REPRESENTAM AS LINHAS E AS COLUNAS.
-
-    FRISAR O TAMANHO (LINHAS X COLUNAS) DA MATRIZ GERADA E COMO ISSO É OTIMIZADO NO SISTEMA BASEADO EM SBERT COM OS VETORES DENSOS DE 384 DIMENSOES, DESTACANDO A FACILIDADE AINDA DE SE INSERIR OUTROS MODELOS DE GERAÇÃO DE MEBEDDINGS COM MAIS DIMENSOES, MAIS CONTEXTO PORÉM MAIOR DEMANDA DE PROCESSMANETO.
-  
   - Método "carrega_dados": 
     - Argumento(s) necessários: Nome da tabela no banco de dados que será utilizada como fonte de extração de texto para o modelo; 
     - Este método é responsável pela abertura do banco de dados relacional e carregamento das colunas textuais de interesse para o modelo. Utiliza-se para tanto os dados das features inseridos pelo operador ao instanciar a classe TfidfRecommender(emb_cols + item_name_col).
@@ -704,7 +777,6 @@ A partir deste momento, cada sistema de recomendação será analisado separadam
 #| tbl-cap: Aplicação dos estágios de pré-processamento sobre a frase exemplificativa.
 #| tbl-pos: H
 #| tbl-width: 5
-  import textwrap
 
   # Função para quebrar texto em linhas menores
   def quebrar_linha(texto, largura=90):
@@ -753,7 +825,7 @@ print(latex_table)
 ```
 
 
-   - Executa a etapa de limpeza e preparação dos dados textuais das colunas que serão vetorizadas. Por se tratar do sistema de recomendação baseado em tfidf, o qual requer minuciosa etapa de limpeza dos dados para evitar-se redundâncias e ruídos que sobrecarreguem o sistema ao estender em demasia o vocabulário*(*bag-of-words*), aplicam-se aos dados as seguintes transformações: Remoção de acentos, sinais de pontuação e caracteres especiais; Alteração para que todas as palavras estejam em letras minúsculas; Remoção das stopwords pré-definidas pela biblioteca nltk + stopwords definidas pelo operador em stopwords_extra, se houverem; Junção do texto de todas as colunas textuais apontadas pelo operador em uma coluna chamada "compilado textual", a qual trará o texto do nome do item + o texto das demais colunas referentes ao texto de apresentação, eventual conteúdo programático e descrição. Esta coluna será utilizada como base para extração dos vetores que descrevem aquele item na matriz tfidf.
+   - Executa a etapa de limpeza e preparação dos dados textuais das colunas que serão vetorizadas. Por se tratar do sistema de recomendação baseado em tfidf, o qual requer minuciosa etapa de limpeza dos dados para evitar-se redundâncias e ruídos que sobrecarreguem o sistema ao estender em demasia o vocabulário*(*bag-of-words*), aplicam-se aos dados as seguintes transformações: Remoção de acentos, sinais de pontuação e caracteres especiais; Alteração para que todas as palavras estejam em letras minúsculas; Remoção das stopwords pré-definidas pela biblioteca nltk + stopwords definidas pelo operador em stopwords_extra, se houverem; Junção do texto de todas as colunas textuais apontadas pelo operador em uma coluna chamada "compilado textual", a qual trará o texto do nome do item + o texto das demais colunas referentes ao texto de apresentação, eventual conteúdo programático e descrição. Esta coluna será utilizada como base para extração dos vetores que descrevem aquele item na matriz tfidf. Ressalta-se ainda que a nova variável criada prescinde de qualquer tratamento por já ter sido formada pela agregação de colunas limpas e transformadas.
   
 - Método "gerar_vetores":
  - Recebe os dados da coluna "compilado_textual" limpos e compilados e aplica sobre eles o método tfidf_vectorizer da biblioteca scikit-learn, de modo a transformá-los nos vetores de representação textual numéricos que serão utilizados como base para a etapa de aplicação da similaridade do cosseno e posterior extração das recomendações;
@@ -764,6 +836,13 @@ print(latex_table)
  - Exibe informações sobre a geração dos embeddings, incluindo o shape da matriz TF-IDF e amostras das matrizes TF-IDF e de similaridade do cosseno, para fins de depuração e análise da qualidade das representações vetoriais.
 
 - Método "recomendar":
+
+::: {#fig-funcao-recomend-tfidf}
+![](imgs/FUNC_RECOMEND_TFIDF.png){width=90%}
+
+ **Demonstração da função que extrai as recomendações**
+:::
+
  - Responsável por exibir as recomendações de itens mais similares ao item de entrada(input), utilizando a matriz de similaridade do cosseno previamente calculada. Ele recebe um ID de item e retorna os N itens mais similares, com base na proximidade vetorial entre os textos embutidos via TF-IDF.
  - Em primeira medida, recebe um ID de item e consulta a matriz de similaridade do cosseno previamente gerada para encontrar os itens mais similares ao item de entrada.
  - A seguir, a partir do ID do item fornecido pelo usuário, o método busca seu índice na matriz TF-IDF utilizando self.indice[id_item]. O nome do item original é recuperado da base de dados (self.df_text) para ser exibido na saída, facilitando a interpretação do usuário.
@@ -773,20 +852,106 @@ print(latex_table)
  - Retorna um DataFrame contendo os IDs, nomes e scores de similaridade dos itens recomendados, de modo a facilitar a análise da qualidade daquilo que foi recomendado como sendo similar ao item de entrada.
  - Exibe as recomendações de forma estruturada, apresentando o nome do item original e os itens sugeridos com seus respectivos scores.
 
-::: {#fig-funcao-recomend-tfidf}
-![](imgs/FUNC_RECOMEND_TFIDF.png){width=80%}
 
- **Demonstração da função que extrai as recomendações**
+- **SBERTRecommender**
+
+::: {#fig-classe-SBERT}
+![](imgs/CLASSE_SBERT.png){width=90%}
+
+ **Construtor da Classe SBERTRecommender**
 :::
 
 
+- Bibliotecas e versão do Python utilizadas:
+    - **Python 3.12.3**
+    - Pandas: Manipulação e estruturação dos dados em DataFrames.
+    - Sentence-Transformers: Geração de embeddings a partir de textos, utilizando modelos pré-treinados como SBERT.
+    - nltk: Utilizado para processamento de linguagem natural, especialmente remoção de stopwords no caso em tela.
+    - Sqlalchemy: Criação de conexão com banco de dados PostgreSQL para consulta dos dados.
+    - Torch: Suporte ao processamento vetorial e operações matriciais com embeddings.
+    - tqdm: Exibição de barra de progresso para acompanhar o processamento dos embeddings.
+    - dotenv: Carregamento seguro de variáveis de ambiente sensíveis, como credenciais do banco de dados.
+    - warnings: Supressão de mensagens de aviso durante a execução do código.
+    - os: Manipulação de variáveis de ambiente e configurações do sistema.
+
+- Parâmetros ao instanciar a classe:
+    - **DB_USER, DB_PASS, DB_NAME, DB_HOST:** Dados relativos ao banco de dados onde as informações relevantes para desenvolvimento do modelo encontram-se.
+    - **emb_cols:** Colunas textuais que serão utilizadas como fonte de informação para o modelo. Aqui o operador deve apontar as features de interesse no dataset que serão compiladas e servirão de base para extração dos vetores de representação textual.
+    - **id_col:** Coluna na base de dados que contém a informação a respeito do identificador único de cada item a ser processado e recomendado.
+    - **item_name_col:** Coluna que contém o título/nome do item a ser processado e recomendado adiante. Importante pois seu texto será adicionado às informações das colunas de emb_cols com vistas a maximizar os dados textuais sobre cada um dos itens.
+    - **model_name:** Atalho para o modelo a ser utilizado para geração dos embeddings textuais. Permite flexibilidade na escolha de diferentes versões do modelo, a depender do domínio da aplicação. **No caso em tela utilizou-se o modelo "paraphrase-multilingual-MiniLM-L12-v2" da biblioteca Sentence Transformers**, entretanto outros modelos poderiam ter sido aplicados.
+
+- **Método "carrega_dados"**:  
+    - **Argumento(s) necessários:** Nome da tabela no banco de dados que será utilizada como fonte de extração de texto para o modelo.  
+    - **Descrição:** Este método é responsável por estabelecer a conexão com o banco de dados PostgreSQL e carregar as colunas textuais de interesse definidas pelo operador ao instanciar a classe. Ele executa uma query SQL para extrair os dados das colunas especificadas em `emb_cols` e `item_name_col`, e define `id_col` como o identificador único de cada item.  
+    - **Fluxo de execução:**  
+        1. Conecta-se ao banco de dados utilizando as credenciais informadas na inicialização da classe.  
+        2. Executa uma consulta SQL para selecionar as colunas de interesse na tabela especificada.  
+        3. Armazena os dados extraídos em um DataFrame Pandas (`df_text`).  
+        4. Remove valores nulos, para que apenas registros completos sejam utilizados na geração dos embeddings.  
+
+- **Método "limpa_dados"**:  
+    - **Argumento(s) necessários:** DataFrame contendo as colunas textuais extraídas do banco de dados.  
+    - **Descrição:** Método responsável pela limpeza e pré-processamento dos textos antes da geração dos embeddings densos pelo modelo. Aplica técnicas padronizadas de tratamento textual, removendo ruídos e normalizando os dados para melhorar a qualidade das representações geradas. Destaca-se o fato de ser uma limpeza menos complexa que aquela realizada no sistema de recomendação, haja vista a menor sensibilidade às nuances de padronização de vocabulário neste sistema.   
+    - **Fluxo de execução:**  
+        1. Converte todos os textos para letras minúsculas para garantir uniformidade.  
+        2. Elimina espaços em demasia.  
+        3. Tokeniza os textos.  
+        4. Remove stopwords padrão da biblioteca NLTK; Diferente do sistema anterior, aqui não serão definidas stopwords além das pré-definidas pela biblioteca em comento;   
+        6. Agrupa o texto de todas as colunas textuais apontadas pelo operador em uma coluna chamada "compilado textual", a qual trará o texto do nome do item + o texto das demais colunas que serão utilizadas para extração dos vetores textuais(emb_cols). Ressalta-se ainda que a nova variável criada prescinde de qualquer tratamento por já ter sido formada pela agregação de colunas limpas e transformadas.  
+
+- **Método "embeddings_extract"**:  
+    - **Argumento(s) necessários:**  
+      - `batch_size` (padrão: 64): Define o lote de sentenças a serem processadas simultaneamente para otimização do uso de memória.  
+    - **Descrição:**  
+      - Este método é essencial para o funcionamento do sistema, pois é responsável pela geração dos embeddings (vetores numéricos densos) a partir dos textos processados na etapa de anterior. Utiliza-se um modelo de deep learning para converter os textos em embedings densos, de modo a permitir cálculos de similaridade eficientes.  
+    - **Fluxo de execução:**  
+      1. Inicialização da coluna `'embeddings'` no DataFrame, preparando-a para armazenar os vetores.  
+      2. Divide os textos em lotes menores (`batch_size`) para evitar sobrecarga de memória e melhora a eficiência do processamento.  
+      3. Para cada lote:  
+         - Extrai os textos da coluna `'compilado_textual'`, garantindo que existam dados para processar.  
+         - Usa o modelo de embeddings apontado pelo usuário ao instanciar a classe para efetivamente transformar os textos em vetores numéricos.  
+         - Converte os embeddings gerados para listas e os armazena na coluna apropriada.   
+      4. Empilha os vetores de embeddings resultantes em uma matriz 2D usando `torch.stack`, consolidando-os em um formato adequado para cálculos de similaridade.  
+    - **Tratamento de erros:**  
+      - Se um erro ocorrer durante a geração dos embeddings, o processamento é interrompido e uma mensagem de erro é exibida.  
+      - Caso todos os embeddings sejam `None`, uma exceção é levantada para alertar sobre possíveis problemas nos dados de entrada.  
+
+
+  - **Método "recomendar_itens"**:  
+
+  ::: {#fig-funcao-recomend-SBERT}
+  ![](imgs/metodo_recomendar_itens_SBERT.png){width=90%}
+
+  **Função responsável pela extração das recomendações**
+  :::
+    - **Argumento(s) necessários:**  
+      - `id_item`: Identificador único do item para o qual as recomendações serão geradas. Aqui é atribuído manualmente, mas em um contexto de produção diz respeito, por exemplo, ao último item adquirido ou pesquisado pelo usuário.  
+      - `top_n` (padrão: 3): Número de recomendações mais similares a serem retornadas.  
+    - **Descrição:**  
+      - Este método realiza efetivamente a recomendação de itens relevantes com base na matriz de similaridade do cosseno entre os embeddings previamente gerados. Trata-se da etapa final do fluxo de recomendação baseado em vetores densos.  
+    - **Fluxo de execução:**   
+      1. Verifica se `id_item` existe na base de dados. Caso contrário, exibe uma mensagem e interrompe a execução.  
+      2. Calcula a similaridade do cosseno entre o embedding do item selecionado e todos os outros embeddings dos demais itens da base.  
+      3. Ordena os itens pela maior similaridade e seleciona os `top_n` mais similares, excluindo-se da relação o próprio item consultado, haja vista sua similaridade máxima(identidade).  
+      4. Cria um DataFrame para exibição dos itens recomendados. Caso nenhuma recomendação seja encontrada, exibe uma mensagem apropriada.
+    - **Tratamento de erros:**  
+      - Se o `id_item` não for encontrado na base de dados relacional, a função interrompe a execução e exibe uma mensagem de erro.  
     
+### Metodologia de avaliação das recomendações
+Os sistemas de recomendação propostos neste projeto adotam uma abordagem não supervisionada, dispensando interações utilizador-item rotuladas ou juízos explícitos de relevância. As recomendações são geradas através da comparação de representações vetoriais (embeddings) extraídas de descrições textuais, utilizando a similaridade semântica como principal critério. Esta abordagem visa garantir escalabilidade e facilitar a implementação em diferentes organizações, eliminando a necessidade de anotações dispendiosas. Diferentemente da filtragem colaborativa, que exige grandes volumes de dados históricos e feedback explícito dos utilizadores para produzir recomendações eficazes, a abordagem adotada baseia-se exclusivamente no conteúdo textual, **permitindo a sua aplicação mesmo em cenários com dados limitados.**
 
+Cumpre ressaltar que os mecanismos de recomendação desenvolvidos neste projeto têm como objetivo inicial fornecer recomendações aos utilizadores mesmo na inexistência de dados históricos. Trata-se de um ponto de partida eficiente para oferecer sugestões relevantes somente com uso de descrições textuais dos itens, sem depender de feedback prévio ou histórico de interações do usuário. No entanto, nada impede que, em uma fase posterior de produção, o sistema seja adaptado para recolher feedback dos utilizadores sobre essas primeiras recomendações. Tal retorno pode ser utilizado para refinar e aprimorar os modelos, permitindo que a abordagem se torne progressivamente mais sofisticada e personalizada, alinhando-se às preferências e comportamentos reais dos utilizadores ao longo do tempo.
 
-
-Segundo , é salutar ressaltar que...
 
 # Apresentação dos Resultados
+
+INTRODUZIR COM UMA MSCLA ENTRE: "This work adopts an unsupervised approach to recommendation, as it does not require labeled user-item interactions or explicit relevance judgments. Instead, recommendations are generated by comparing item embeddings derived from textual descriptions, leveraging semantic similarity as the primary signal."
+
+E: "While traditional metrics like precision and recall require labeled datasets, this work evaluates recommendation quality through interpretative analysis, examining semantic coherence and contextual relevance. Case studies (Table 3) demonstrate that embeddings capture nuanced relationships (e.g., thematic parallels between historical novels and biographies), though limitations arise from polysemy (Section 4.2)."
+
+INSERIR UMA PRIMEIRA PARTE COM TESTES DE DIFERENTES METRICAS DE SIMILARIDADE. DIZER QUE MANHATTAN NAO SE MOSTROU ADEQUADA E EUCLIDEAN, APESAR DE RESULTADOS PROXIMOS EM AMBOS OS RECOMENDERS, TORNA A INTERPRETAÇAO E A EXPLICACAO DOS RESULTADOS MUITO MAIS COMPLEXA SE COMPARADA A SIMILARIODADE DO COSSENO. (LEMBRAR QUE VETORES TFIDF SAO NORMALIZADOS E POR ISSO EUCLIDEAN E COSINE PODEM TER SIDO TAO SEMELHANTES)
+
 
 DIVIDIR EM 2: PRIMEIRO, RESULTADOS APÓS APLICAÇAO AO DATASET DE CURSOS (MENOR VOLUME); SEGUBNDO, RESULTADOS APOS APLICAÇAO AO DATASET DE LIVROS(MAIS VOLUMOSO E COMPLEXO); DETALHAR MINUCIOSAMWNTE A DIFERENCA NA CASPTAÇAO DE CONTEXTO, TEMPO DE PROCESSMANETO PARA AMBAS AS ABORDAGENS ETC.
 
