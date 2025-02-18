@@ -939,16 +939,38 @@ print(latex_table)
       - Se o `id_item` não for encontrado na base de dados relacional, a função interrompe a execução e exibe uma mensagem de erro.  
     
 ### Metodologia de avaliação das recomendações
-Os sistemas de recomendação propostos neste projeto adotam uma abordagem não supervisionada, dispensando interações utilizador-item rotuladas ou juízos explícitos de relevância. As recomendações são geradas através da comparação de representações vetoriais (embeddings) extraídas de descrições textuais, utilizando a similaridade semântica como principal critério. Esta abordagem visa garantir escalabilidade e facilitar a implementação em diferentes organizações, eliminando a necessidade de anotações dispendiosas. Diferentemente da filtragem colaborativa, que exige grandes volumes de dados históricos e feedback explícito dos utilizadores para produzir recomendações eficazes, a abordagem adotada baseia-se exclusivamente no conteúdo textual, **permitindo a sua aplicação mesmo em cenários com dados limitados.**
+Para perceber de maneira clara o método a ser utilizado para avaliar as recomendações geradas no âmbito deste projecto, há de se delinear ainda que de maneira superficial as diferenças entre a aprendizagem de máquina supervisionada e não supervisionada.
 
-Cumpre ressaltar que os mecanismos de recomendação desenvolvidos neste projeto têm como objetivo inicial fornecer recomendações aos utilizadores mesmo na inexistência de dados históricos. Trata-se de um ponto de partida eficiente para oferecer sugestões relevantes somente com uso de descrições textuais dos itens, sem depender de feedback prévio ou histórico de interações do usuário. No entanto, nada impede que, em uma fase posterior de produção, o sistema seja adaptado para recolher feedback dos utilizadores sobre essas primeiras recomendações. Tal retorno pode ser utilizado para refinar e aprimorar os modelos, permitindo que a abordagem se torne progressivamente mais sofisticada e personalizada, alinhando-se às preferências e comportamentos reais dos utilizadores ao longo do tempo.
+Na aprendizagem de máquina supervisionada, os modelos são treinados com dados rotulados, o que permite a avaliação quantitativa acerca da qualidade dos outputs gerados. Neste tipo de abordagem utilizam-se métricas como recall(sensibilidade), precisão, f1-score dentre outras para avaliar o desempenho dos modelos com base em respostas conhecidas. Aplicando-se à realidade dos sistemas de recomendação, aqueles categorizados como filtragem colaborativa e baseados em *matrix factorization*, por exemplo, são considerados como supervisionados pois são treinados para realizar a previsão das interações usuário-item com base em dados históricos existentes, de modo a validar-se a qualidade das recomendações ao se comparar aquilo que fora previsto com os valores reais conhecidos.
+
+De outro giro, na aprendizagem de máquina não supervisionada, não existem dados rotulados ou respostas pré-definidas para aplicar-se ao treinamento dos modelos. Desta feita, neste tipo de abordagem os modelos devem indentificar padrões intrínsecos aos dados, como agrupamentos ou relações de similaridade. Ressalta-se que neste contexto a aplicação de métricas de avaliação quantitativas como aquelas citadas no parágrafo anterior torna-se inviável, pois não existem dados rotulados para treinamento dos modelos.
+
+Ante o exposto, **os sistemas de recomendação propostos neste projeto adotam uma abordagem de avaliação qualitativa e não supervisionada**, dispensando interações utilizador-item rotuladas ou juízos explícitos de relevância. As recomendações são geradas através da comparação de representações vetoriais (embeddings) extraídas de descrições textuais, **utilizando a similaridade semântica como principal critério.** Esta abordagem visa garantir escalabilidade e facilitar a implementação em diferentes organizações, eliminando a necessidade de anotações dispendiosas. Diferentemente da [filtragem colaborativa](#dos-sistemas-de-recomendação), que exige grandes volumes de dados históricos e feedback explícito dos utilizadores para produzir recomendações eficazes, a abordagem adotada baseia-se exclusivamente no conteúdo textual, **permitindo a sua aplicação mesmo em cenários com dados limitados.**
+
+Cumpre ressaltar que os mecanismos de recomendação desenvolvidos neste projeto têm como objetivo inicial fornecer recomendações aos utilizadores mesmo na inexistência de dados históricos, além de explorar o potencial existente na vertente da aprendizagem não supervisionada. Trata-se, portanto, de um ponto de partida eficiente para oferecer sugestões relevantes somente com uso de descrições textuais dos itens, sem depender de feedback prévio ou histórico de interações do usuário. No entanto, nada impede que, em uma fase posterior, o sistema seja adaptado para recolher feedback dos utilizadores sobre a qualidade daquilo que está a ser recomendado. Tal retorno pode ser utilizado para refinar e aprimorar os modelos, permitindo que a abordagem se torne progressivamente mais sofisticada e personalizada, alinhando-se às preferências e comportamentos reais dos utilizadores ao longo do tempo.
+
+Por fim, no âmbito deste projeto, haja vista tratar-se de desenvolvimento de sistemas de recomendação não supervisionados, a avaliação qualitativa daquilo que está a ser recomendado priorizou os seguintes aspetos:
+
+- Análise manual da relevância temática existente entre o item base e aqueles recomendados a partir dele, considerando-se a relevância semântica e, principalmente, a coerência contextual;
+- Capacidade de identificação pelos vetores das relações de dependência entre determinados itens (e.g, capacidade de recomendação de sequências);
+- Análise e discussão crítica de casos onde os modelos apresentam falhas, sobretudo no que diz respeito à polissemia e não captação de contexto;
 
 
 # Apresentação dos Resultados
 
-INTRODUZIR COM UMA MSCLA ENTRE: "This work adopts an unsupervised approach to recommendation, as it does not require labeled user-item interactions or explicit relevance judgments. Instead, recommendations are generated by comparing item embeddings derived from textual descriptions, leveraging semantic similarity as the primary signal."
+A avaliação proposta neste projeto encontra a sua validação prática na análise dos resultados obtidos pelos sistemas de recomendação baseados em *TF-IDF* e *SBERT*. A presente secção estrutura-se em duas partes principais, correspondentes aos *datasets* analisados: (1) um conjunto reduzido de cursos da plataforma EVG, que permite uma inspeção detalhada e interpretável das recomendações geradas; e (2) um corpus extenso de mais de 29.000 livros extraídos da *Google Books API*, onde se testa a robustez e escalabilidade do método em larga escala. Em ambos os cenários, os resultados são apresentados em estruturas de *dataframe* que têm por objetivo apresentar os contrastes entre as sugestões dos dois modelos, apoiando-se para tanto nas [métricas de avaliação](#metodologia-de-avaliação-das-recomendações) apontadas no fim da secção anterior e nos [objectivos](#objetivos-1) estabelecidos previamente.  
 
-E: "While traditional metrics like precision and recall require labeled datasets, this work evaluates recommendation quality through interpretative analysis, examining semantic coherence and contextual relevance. Case studies (Table 3) demonstrate that embeddings capture nuanced relationships (e.g., thematic parallels between historical novels and biographies), though limitations arise from polysemy (Section 4.2)."
+Adicionalmente, inclui-se uma breve análise comparativa de algumass métricas de similaridade (*cosseno*, *euclidiana* e *Manhattan*) aplicadas a cada recomendador em ambos os *datasets*. Este exercício, de natureza puramente exploratória, visa elucidar como a escolha da medida influencia a diversidade e precisão das recomendações, consolidando assim as opções metodológicas adotadas. 
+
+## Dataset "Cursos"
+
+a) TFIDF Recommender:
+
+1. Curso base: ""
+
+
+## Dataset "Livros"
+
 
 INSERIR UMA PRIMEIRA PARTE COM TESTES DE DIFERENTES METRICAS DE SIMILARIDADE. DIZER QUE MANHATTAN NAO SE MOSTROU ADEQUADA E EUCLIDEAN, APESAR DE RESULTADOS PROXIMOS EM AMBOS OS RECOMENDERS, TORNA A INTERPRETAÇAO E A EXPLICACAO DOS RESULTADOS MUITO MAIS COMPLEXA SE COMPARADA A SIMILARIODADE DO COSSENO. (LEMBRAR QUE VETORES TFIDF SAO NORMALIZADOS E POR ISSO EUCLIDEAN E COSINE PODEM TER SIDO TAO SEMELHANTES)
 
@@ -956,6 +978,8 @@ INSERIR UMA PRIMEIRA PARTE COM TESTES DE DIFERENTES METRICAS DE SIMILARIDADE. DI
 DIVIDIR EM 2: PRIMEIRO, RESULTADOS APÓS APLICAÇAO AO DATASET DE CURSOS (MENOR VOLUME); SEGUBNDO, RESULTADOS APOS APLICAÇAO AO DATASET DE LIVROS(MAIS VOLUMOSO E COMPLEXO); DETALHAR MINUCIOSAMWNTE A DIFERENCA NA CASPTAÇAO DE CONTEXTO, TEMPO DE PROCESSMANETO PARA AMBAS AS ABORDAGENS ETC.
 
 # USE CASE:
+
+## Aplicação do Recommender SBERT aos dados da PNDP
 CITAR RAPIDAMENTE APLICAÇÃO NA EXTRAÇÃO DE RECOMENDAÇOES PARA PNDP. RESSALTAR ECONOMIA DE RECURSOS E GANHO DE EFICIENCIA.
 
 INSERIR CAPTURA DE TELA DO APP STREAMLIT DESENVOLVIDO E RESSALTAR A FUNCIONALIDADE DE O GESTOR PODER ALTERAR A SIMILARIDADE DO COSSENO PARA AUMENTAR OU DIMINUIR O RIGOR NA HORA DE RECOMENDAR
