@@ -960,13 +960,221 @@ Por fim, no âmbito deste projeto, haja vista tratar-se de desenvolvimento de si
 
 A avaliação proposta neste projeto encontra a sua validação prática na análise dos resultados obtidos pelos sistemas de recomendação baseados em *TF-IDF* e *SBERT*. A presente secção estrutura-se em duas partes principais, correspondentes aos *datasets* analisados: (1) um conjunto reduzido de cursos da plataforma EVG, que permite uma inspeção detalhada e interpretável das recomendações geradas; e (2) um corpus extenso de mais de 29.000 livros extraídos da *Google Books API*, onde se testa a robustez e escalabilidade do método em larga escala. Em ambos os cenários, os resultados são apresentados em estruturas de *dataframe* que têm por objetivo apresentar os contrastes entre as sugestões dos dois modelos, apoiando-se para tanto nas [métricas de avaliação](#metodologia-de-avaliação-das-recomendações) apontadas no fim da secção anterior e nos [objectivos](#objetivos-1) estabelecidos previamente.  
 
-Adicionalmente, inclui-se uma breve análise comparativa de algumass métricas de similaridade (*cosseno*, *euclidiana* e *Manhattan*) aplicadas a cada recomendador em ambos os *datasets*. Este exercício, de natureza puramente exploratória, visa elucidar como a escolha da medida influencia a diversidade e precisão das recomendações, consolidando assim as opções metodológicas adotadas. 
+
+Adicionalmente, inclui-se uma breve análise comparativa de algumas métricas de similaridade (*cosseno*, *euclidiana* e *Manhattan*) aplicadas a cada recomendador em ambos os *datasets*. Este exercício, de natureza puramente exploratória, visa elucidar como a escolha da medida influencia a diversidade e precisão das recomendações, consolidando assim as opções metodológicas adotadas. 
 
 ## Dataset "Cursos"
+As recomendações devem ser intepretadas da seguinte maneira: Considera-se como "item base" o último item consumido/pesquisado/favoritado pelo usuário. A partir deste item, recomendam-se os mais similares.
 
-a) TFIDF Recommender:
+Por conseguinte, haja vista que a base de cursos possui apenas 806 itens, serão extraídas e apresentadas apenas as 3 principais recomendações para cada modelo.
 
-1. Curso base: ""
+a) **Item Base: "Estatística Para Análise De Dados Na Administração Pública"**
+
+- Texto descritivo: Estatística de forma simples, objetiva e prática é o que você encontrará neste curso! Faça sua inscrição e aprenda a organizar, analisar dados, determinar suas correlações e a reconhecer os princípios da estatística descritiva em linguagem R para analisar dados na Administração Pública. Matricule-se e faça parte da estatística daqueles que buscam crescimento pessoal e profissional se aperfeiçoando com os cursos da EV.G.
+
+> **Tfidf Recommender:**
+
+```{python}
+#| output: asis
+#| label: tbl-curso-930-tfidf
+#| tbl-cap: Recomendações para o Curso 930 - TFIDF
+#| tbl-pos: H
+#| tbl-width: 5
+
+recomendacoes = pd.read_csv("/Users/pedroh.mello/Desktop/MESTRADO_MCDE/SEMINARIO/PROJETO_CONCLUSAO_MESTRADO/data/tbls_recomends_resultado/tfidf_curso_930.csv", index_col=0)
+
+# Gerar a tabela LaTeX com formatação
+latex_table = recomendacoes.to_latex(
+    index=False, 
+    escape=False, 
+    column_format="|c|l|c|",  # Ensures correct alignment
+    header=["Item Recomendado", "Similaridade Cosseno"]
+)
+
+# Ajustar bordas da tabela
+latex_table = latex_table.replace("\\toprule", "\\hline")
+latex_table = latex_table.replace("\\midrule", "\\hline")
+latex_table = latex_table.replace("\\bottomrule", "\\hline")
+latex_table = latex_table.replace("\\\\\n", " \\\\\n\\hline\n")  # Adiciona linhas horizontais entre as linhas
+
+# Exibir a tabela no formato LaTeX
+print(latex_table)
+
+```
+
+
+> **SBERTrecommender:**
+
+```{python}
+#| output: asis
+#| label: tbl-curso-930-sbert
+#| tbl-cap: Recomendações para o Curso 930 - SBERT
+#| tbl-pos: H
+#| tbl-width: 5
+
+recomendacoes = pd.read_csv("/Users/pedroh.mello/Desktop/MESTRADO_MCDE/SEMINARIO/PROJETO_CONCLUSAO_MESTRADO/data/tbls_recomends_resultado/sbert_curso_930.csv", index_col=0)
+
+# Gerar a tabela LaTeX com formatação
+latex_table = recomendacoes.to_latex(
+    index=False, 
+    escape=False, 
+    column_format="|c|l|c|",  # Ensures correct alignment
+    header=["Item Recomendado", "Similaridade Cosseno"]
+)
+
+# Ajustar bordas da tabela
+latex_table = latex_table.replace("\\toprule", "\\hline")
+latex_table = latex_table.replace("\\midrule", "\\hline")
+latex_table = latex_table.replace("\\bottomrule", "\\hline")
+latex_table = latex_table.replace("\\\\\n", " \\\\\n\\hline\n")  # Adiciona linhas horizontais entre as linhas
+
+# Exibir a tabela no formato LaTeX
+print(latex_table)
+
+```
+
+- Ressalta-se preliminarmente que, ao analisar o contexto em que o curso base insere-se, todas as recomendações de ambos os sistemas estão ajustas à realidade e são assertivas no que diz respeito à trilha de aprendizado pretendida pelo usuário.
+- Ademais, as recomendações de ambos os sistemas foram similares para este caso, o que demonstra que o sistema mais rudimentar e baseado em *bag-of-words* (TFIDF) também pode ser útil a depender do contexto de aplicação. A diferença, contudo, parece estar no grau de confiança. Enquanto o SBERT recomenda "Introdução à Ciência de Dados - Estatística Essencial" com um grau de proximidade elevado (0.729554), o sistema TFIDF recomenda o mesmo curso com grau de similaridade consideravelmente menor (0.434109).
+- Chama a atenção ainda a ordem das recomendações. Se para o sistema mais avançado (SBERT) o usuário deve realizar o curso "Análise de Dados em Linguagem R" imediatamente após a realização de "Estatística Para Análise De Dados Na Administração Pública", para o outro sistema deve-se realizar o curso de "Introdução à Ciência de Dados - Estatística Essencial".
+- Por último, é salutar ressaltar que a recomendação do curso "Governança de Dados" pelo primeiro sistema pode ser um indicativo da sua principal limitação: A não captação de contexto, reduzindo-se a coincidências lexicais entre palavras-chave. De outro giro, o segundo sistema claramente priorizou cursos mais alinhados ao foco do item-base, sobretudo no que tange à perspectiva quantitativa/estatística. 
+
+b) **Item Base: "S2Id - M2 - Usuário Federal - Solicitação De Recursos Para Ações De Resposta"**
+
+- Texto descritivo: Neste curso, o aluno vai compreender como utilizar o S2ID para cumprir as funções relacionadas à análise de solicitações de recursos federais para ações de reposta às situações de emergência ou de estado de calamidade pública , composta por procedimentos ligados às atribuições e competências dos perfis de Analista, Coordenador, Coordenador-geral e Diretor.
+
+> **Tfidf Recommender:**
+
+```{python}
+#| output: asis
+#| label: tbl-curso-753-tfidf
+#| tbl-cap: Recomendações para o Curso 753 - TFIDF
+#| tbl-pos: H
+#| tbl-width: 5
+
+recomendacoes = pd.read_csv("/Users/pedroh.mello/Desktop/MESTRADO_MCDE/SEMINARIO/PROJETO_CONCLUSAO_MESTRADO/data/tbls_recomends_resultado/tfidf_curso_753.csv", index_col=0)
+
+# Gerar a tabela LaTeX com formatação
+latex_table = recomendacoes.to_latex(
+    index=False, 
+    escape=False, 
+    column_format="|c|l|c|",  # Ensures correct alignment
+    header=["Item Recomendado", "Similaridade Cosseno"]
+)
+
+# Ajustar bordas da tabela
+latex_table = latex_table.replace("\\toprule", "\\hline")
+latex_table = latex_table.replace("\\midrule", "\\hline")
+latex_table = latex_table.replace("\\bottomrule", "\\hline")
+latex_table = latex_table.replace("\\\\\n", " \\\\\n\\hline\n")  # Adiciona linhas horizontais entre as linhas
+
+# Exibir a tabela no formato LaTeX
+print(latex_table)
+
+```
+
+
+> **SBERTrecommender:**
+
+```{python}
+#| output: asis
+#| label: tbl-curso-753-sbert
+#| tbl-cap: Recomendações para o Curso 753 - SBERT
+#| tbl-pos: H
+#| tbl-width: 5
+
+recomendacoes = pd.read_csv("/Users/pedroh.mello/Desktop/MESTRADO_MCDE/SEMINARIO/PROJETO_CONCLUSAO_MESTRADO/data/tbls_recomends_resultado/sbert_curso_753.csv", index_col=0)
+
+# Gerar a tabela LaTeX com formatação
+latex_table = recomendacoes.to_latex(
+    index=False, 
+    escape=False, 
+    column_format="|c|l|c|",  # Ensures correct alignment
+    header=["Item Recomendado", "Similaridade Cosseno"]
+)
+
+# Ajustar bordas da tabela
+latex_table = latex_table.replace("\\toprule", "\\hline")
+latex_table = latex_table.replace("\\midrule", "\\hline")
+latex_table = latex_table.replace("\\bottomrule", "\\hline")
+latex_table = latex_table.replace("\\\\\n", " \\\\\n\\hline\n")  # Adiciona linhas horizontais entre as linhas
+
+# Exibir a tabela no formato LaTeX
+print(latex_table)
+
+```
+
+- Ao analisar as recomendações atribuídas por ambos os sistemas para o curso em questão, resta claro a elevada capacidade das duas abordagens em captar e recomendar cursos sequenciais. Resta claro que todos os cursos recomendados fazem parte do mesmo ecossistema do curso base, sendo portanto sequências lógicas e naturais prontamente identificadas pelos modelos;
+- Chama atenção novamente o grau de confiança de cada modelo de acordo com a similaridade do cosseno apontada entre o curso base e os recomendados. O SBERT chega a apontar uma relação de quase identidade (0.93) entre as capacitações “S2Id - M2 - Usuário Federal - Solicitação De Recursos Para Ações De Resposta” e "S2ID - M2 - Usuário Federal - Liberação de Recursos para Ações de Resposta", enquanto o TFIDF aponta apenas 0.58.
+
+c) **Item Base: "Microeconomia"**
+
+- Texto descritivo: O curso apresenta noções de microeconomia com o objetivo capacitar pessoas para atuar na avaliação socioeconômica de projetos. Essa avaliação inclui a compreensão das implicações sociais, econômicas e ambientais ao longo do ciclo de vida dos projetos e serve como subsídio à tomada de decisões..
+
+> **Tfidf Recommender:**
+
+```{python}
+#| output: asis
+#| label: tbl-curso-92-tfidf
+#| tbl-cap: Recomendações para o Curso 92 - TFIDF
+#| tbl-pos: H
+#| tbl-width: 5
+
+recomendacoes = pd.read_csv("/Users/pedroh.mello/Desktop/MESTRADO_MCDE/SEMINARIO/PROJETO_CONCLUSAO_MESTRADO/data/tbls_recomends_resultado/tfidf_curso_92.csv", index_col=0)
+
+# Gerar a tabela LaTeX com formatação
+latex_table = recomendacoes.to_latex(
+    index=False, 
+    escape=False, 
+    column_format="|c|l|c|",  # Ensures correct alignment
+    header=["Item Recomendado", "Similaridade Cosseno"]
+)
+
+# Ajustar bordas da tabela
+latex_table = latex_table.replace("\\toprule", "\\hline")
+latex_table = latex_table.replace("\\midrule", "\\hline")
+latex_table = latex_table.replace("\\bottomrule", "\\hline")
+latex_table = latex_table.replace("\\\\\n", " \\\\\n\\hline\n")  # Adiciona linhas horizontais entre as linhas
+
+# Exibir a tabela no formato LaTeX
+print(latex_table)
+
+```
+
+
+> **SBERTrecommender:**
+
+```{python}
+#| output: asis
+#| label: tbl-curso-92-sbert
+#| tbl-cap: Recomendações para o Curso 92 - SBERT
+#| tbl-pos: H
+#| tbl-width: 5
+
+recomendacoes = pd.read_csv("/Users/pedroh.mello/Desktop/MESTRADO_MCDE/SEMINARIO/PROJETO_CONCLUSAO_MESTRADO/data/tbls_recomends_resultado/sbert_curso_92.csv", index_col=0)
+
+# Gerar a tabela LaTeX com formatação
+latex_table = recomendacoes.to_latex(
+    index=False, 
+    escape=False, 
+    column_format="|c|l|c|",  # Ensures correct alignment
+    header=["Item Recomendado", "Similaridade Cosseno"]
+)
+
+# Ajustar bordas da tabela
+latex_table = latex_table.replace("\\toprule", "\\hline")
+latex_table = latex_table.replace("\\midrule", "\\hline")
+latex_table = latex_table.replace("\\bottomrule", "\\hline")
+latex_table = latex_table.replace("\\\\\n", " \\\\\n\\hline\n")  # Adiciona linhas horizontais entre as linhas
+
+# Exibir a tabela no formato LaTeX
+print(latex_table)
+
+```
+
+- Novamente ambos os modelos performam de maneira satisfatória no que diz respeito à similaridade semântica, temática e contextual entre o item base e as recomendações;
+- Há mais uma vez uma quase sobreposição das recomendações entre os dois modelos, o que soa perfeitamente normal haja vista ser uma base pequena, com apenas 807 itens. Ainda assim, nota-se mais uma vez uma ligeira vantagem nas recomendações exaradas pelo modelo SBERT, pois os três itens apontados no caso em tela possuem elevada semelhança com a temática da microeconomia, enquanto o último item recomendado pelo TFIDF pode nã ser tão relevante ao usuário que realizou a capacitação em Microeconomia.
+- Por fim, salta aos olhos novamente FALAR DA DIFERENCA NOS VALORES DA SIM COSS. CITAR DEEP. CITAR QUE PODE SER UM PROBLEMA SE GESTPR DO SISTEMA DECIDIR POR DEFINIR TRESHOLD DE SIMILARIDADE MINIMA. 
+ 
 
 
 ## Dataset "Livros"
