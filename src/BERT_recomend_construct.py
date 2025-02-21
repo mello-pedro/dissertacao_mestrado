@@ -201,7 +201,7 @@ class Recommender:
         recomendacao = pd.DataFrame({
             #'Item Recomendado': self.df_text[self.item_name_col].iloc[sim_index],
             'Item Recomendado': self.df_text['nome_original'].iloc[sim_index],
-            'Sim_Coss': [score[1] for score in sim_score]
+            'Similaridade Cosseno': [score[1] for score in sim_score]
         }).reset_index(drop=True)
 
         # Adjust index to start at 1
