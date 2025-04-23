@@ -33,11 +33,38 @@ jupyter: testenv
 
 {{< pagebreak >}}
 
+# Lista de abreviaturas e siglas {.unnumbered}
+
+*   **PLN** - *Processamento de Linguagem Natural*
+*   **SR** - *Sistemas de Recomendação*
+*   **TF-IDF** - *Term Frequency - Inverse Document Frequency*
+*   **CBOW** - *Continuous Bag-of-Words*
+*   **RNNs** - *Recurrent Neural Networks* 
+*   **LSTMs** - *Long Short-Term Memory networks* 
+*   **BERT** - *Bidirectional Encoder Representations from Transformers*
+*   **SBERT** - *Sentence-BERT*
+*   **MLM** - *Masked Language Modeling*
+*   **NSP** - *Next Sentence Prediction*
+*   **EVG** - *Escola Virtual de Governo*
+*   **ENAP** - *Fundação Escola Nacional de Administração Pública*
+*   **API** - *Application Programming Interface* 
+*   **ISBN** - *International Standard Book Number* 
+*   **SQL** - *Structured Query Language* 
+*   **OAE** - *Obras de Arte Especiais*
+*   **PNDP** - *Política Nacional de Desenvolvimento de Pessoas*
+*   **PDP** - *Plano de Desenvolvimento de Pessoas*
+*   **LDA** - *Latent Dirichlet Allocation*
+*   **CGDADOS** - *Coordenação-Geral de Ciência de Dados*
+*   **MVP** - *Minimum Viable Product*
+
 # Resumo {.unnumbered}
-qishfiuqfvuvfhhuiqfhviuqhdfvuihdfuivhduifvhdiufvhiuwhfdiuvhwifd
+
+O presente trabalho desenvolve sistemas de recomendação baseados em Processamento de Linguagem Natural para ambientes com recursos limitados. O objetivo é investigar técnicas de vetorização textual — TF-IDF e SBERT — implementando dois protótipos não supervisionados e comparando-os em dois conjuntos de dados: cursos da Escola Virtual de Governo (808 registos) e livros da Google Books API (29 815 registos). A problemática centra-se no custo e volume de dados exigidos pelos sistemas tradicionais de filtragem colaborativa, que podem inviabilizar organizações de menor porte. Adota-se uma abordagem baseada no conteúdo, com recolha de informações textuais (títulos, descrições e conteúdos programáticos) e pré-processamento que inclui remoção de stopwords, normalização, eliminação de acentuação e pontuação. As representações vetoriais obtidas são avaliadas pela similaridade do cosseno, permitindo aferir a qualidade das recomendações. Os resultados revelam que ambos os modelos produzem sugestões relevantes, com o SBERT apresentando maior precisão semântica e escalabilidade, demonstrando a viabilidade de sistemas acessíveis a partir de dados textuais mínimos.
+
+
 
 # Abstract {.unnumbered}
-sjkcbhquihvuiqehvuirhqeipvhdfiuvhidfhvkjsdnfvkjsdnfvkjnvkjdfvkjsdfvkjlf
+This dissertation presents the development of content-based recommendation systems leveraging Natural Language Processing techniques for contexts with constrained resources. The primary aim is to investigate textual vectorization methods — TF-IDF and SBERT — by implementing and comparing two unsupervised recommender prototypes on two datasets: the Escola Virtual de Governo course catalogue (808 entries) and a Google Books API literary corpus (29,815 entries). The core challenge addressed is the prohibitive cost and data volume requirements of traditional collaborative filtering systems. A content-based approach is adopted, collecting textual information (titles, descriptions, and curricular content), followed by preprocessing steps including stopword removal, normalization, and accent and punctuation stripping. Sentence embeddings and term-weighting vectors are compared using cosine similarity to assess recommendation quality. The findings indicate that both models generate relevant suggestions, with the SBERT-based recommender achieving superior semantic precision and scalability, demonstrating effective recommendation with minimal textual input.
 
 # Introdução {.unnumbered}
 
@@ -106,9 +133,9 @@ Este tipo de sistema baseia-se principalmente nas interações entre:
 Os SR podem desempenhar diferentes funções. Sob a ótica do fornecedor, um SR pode ser usado por exemplo para ampliar as vendas ou fidelizar os utilizadores da sua plataforma. Do ponto de vista do utilizador, o objetivo principal é encontrar itens relevantes, úteis e adequados às suas necessidades, sem precisar despender muito tempo nesta tarefa.
 
 Por conseguinte, de acordo com @Herlocker_2004, os SR podem ser sub-divididos qunto às suas funções mais populares em 9(nove) tarefas principais, dentre as quais destacamos 3(três), a saber:
+{{< pagebreak >}}
 
 - **Recomendação de alguns itens bons:** O SR recomendará uma lista classificada de itens que possuem maior chance de satisfazer as necessidades do usuário, com ou sem previsão explícita de avaliação.
-{{< pagebreak >}}
 
 - **Anotação em contexto:** O sistema destaca alguns itens de uma lista com base nas preferências de longo prazo do utilizador.
 
@@ -220,7 +247,7 @@ A lematização consiste em reduzir as palavras à sua forma base (lema), levand
 O stemming, por sua vez, é uma técnica mais simples, que elimina sufixos para reduzir palavras à sua forma raíz, sem contudo considerar a gramática. Ele usa regras fixas para truncar as palavras, o que pode gerar formas sem sentido. No exemplo anterior, "estudando", "estudou" e "estudam" seriam reduzidos a "estud". Embora o stemming reduza o vocabulário de forma eficiente, sua falta de precisão pode ser um problema em algumas aplicações.
 
 
-### Representação textual em formato vetorial: Da frequência simples de palavras à semântica contextual.
+### Representação textual em formato vetorial: Do *bag-of-words* à semântica contextual.
 
 ::: {#fig-nlp}
 ![](imgs/IA_E_NLP.png){width=60%}
@@ -236,12 +263,12 @@ Desta forma, a vetorização textual desempenha um papel central no Processament
 
 #### CountVectorizer:
 Trata-se de um dos primeiros métodos utilizados no campo do PLN para transformar textos em representações numéricas passíveis de serem percebidas pelas máquinas. O CountVectorizer consiste em criar uma espécie de vocabulário com todas as palavras únicas existentes em um texto e, após isso, realiza-se a contagem da frequência de cada uma daquelas palavras ao longo do texto formando-se uma matriz onde cada linha representa um documento e cada coluna representa uma palavra do vocabulário formado.
+{{< pagebreak >}}
 
 A seguir um exemplo deste tipo de representação:  
 
 a) **"Eu Gosto de PLN"** 
 b) **"PLN é incrível"** 
-{{< pagebreak >}}
 
 O Count-Vectorizer representaria as sentenças como:
 <br>
@@ -293,7 +320,6 @@ Apesar de ser simples e de fácil implementação, as desvantagens desta abordag
 #### TF-IDF (*Term Frequency - Inverse Document Frequency*):
 Assim como o *CountVectorizer*, o TF-IDF também é um método de transformação de textos em valores numéricos com o intuito de representar a linguagem natural junto às máquinas. Ocorre que, diferentemente da abordagem anteriormente mencionada segundo a qual apenas a frequência absoluta das palavras importava para a formação dos vetores, o TF-IDF tem por objetivo reduzir a importância de termos muito comuns e destacar aqueles que podem ser mais relevantes.
 
-{{< pagebreak >}}
 
 Aqui, as palavras com maior número de ocorrências ao longo do documento tendem a ser tratadas como menos relevantes e têm sua importância diluída, de modo a conferir maior destque àquelas palavras com menor ocorrência ao longo do texto que está a ser vetorizado. Para tanto, utilizam-se as seguintes fórmulas:
 
@@ -343,7 +369,6 @@ $$
 \text{tfidf}(t, d) = \text{tf}(t, d) \times \text{idf}(t)
 $$
 
-{{< pagebreak >}}
 
 A seguir uma tabela exemplificativa do resultado da aplicação desta técnica em três documentos[^1] diferentes, quais sejam:
 
@@ -506,21 +531,26 @@ d) Comparar o desempenho de ambos os sistemas no que diz respeito a:
 - Capacidade de perceção de contexto e nuances semânticas. O que interessa ao projeto neste ponto é perceber a diferença entre vetores de representação textual contextuais(SBERT) e não contextuais(TF-IDF) e como isso afeta o resultado final no que tange à qualidade das recomendações exaradas;
 - Capacidade de generalização em diferentes domínios;
 - Capacidade de recomendação de sequências naturais de itens (Por exemplo, se lhe é inputado como dado de entrada o item "Harry Potter e a Câmara Secreta" o sistema deve ser capaz de recomendar naturalmente o próximo item da sequência, como "Harry Potter e o Prisioneiro de Azkaban", além de recomendar itens semelhantes, como outros livros de fantasia similares à série do exemplo);
-- Tempo necessário para processamento dos dados e emissão das recomendações tanto na base menor(cursos) quanto na base maior(livros);
 
 e) Finalizar o projeto tendo avançado significativamente no entendimento do funcionamento e aplicação das principais técnicas de PLN
 
 
 ## Metodologia
 
-::: {#fig-metodo}
-![](imgs/FLOWCHART_RECS.png){width=210%}
-
- **Fluxograma da metodologia utilizada**
-:::
-
-A @fig-metodo demonstra o fluxo metodológico utilizado ao longo deste projeto. Os passos serão detalhados a seguir em pontos específicos.
+```{=latex}
+\begin{figure}[H]
+  \centering
+  \makebox[\textwidth][c]{
+    \includegraphics[width=2.2\textwidth, keepaspectratio]{imgs/FLOWCHART_RECS.png}
+  }
+  \caption{Fluxograma da metodologia utilizada}
+  \label{fig-metodo}
+\end{figure}
+```
 {{< pagebreak >}}
+
+A Figura 6 demonstra o fluxo metodológico utilizado ao longo deste projeto. Os passos serão detalhados a seguir em pontos específicos.
+
 
 ### Extração dos dados e Datasets utilizados
 A etapa inicial do estudo envolve a extração e o armazenamento dos dados textuais necessários para o desenvolvimento e avaliação dos sistemas de recomendação. Para testar a eficácia dos modelos em diferentes cenários, foram selecionados dois conjuntos de dados distintos: o primeiro, de menor volume, é composto pela matriz de cursos disponíveis no website da Escola Virtual de Governo (EVG); o segundo, significativamente maior, contém livros em língua portuguesa extraídos da API do Google Books. A escolha desses datasets permite avaliar o desempenho dos sistemas tanto em bases reduzidas quanto em conjuntos de dados mais extensos e diversificados.
@@ -531,7 +561,7 @@ a) **Dataset "Cursos"**
 ```{python}
 #| output: asis
 #| label: tbl-cursos-tail
-#| tbl-cap: Amostra de 10 linhas e 5 colunas da tabela de cursos
+#| tbl-cap: Amostra de 8 linhas e 5 colunas da tabela de cursos
 #| tbl-pos: H
 #| tbl-width: 3
 #Importando os dados das capacitacoes
@@ -566,7 +596,7 @@ df_text = df_text.rename(columns=lambda x: x.replace('_', ' '))
 #df_text.tail(10)
 
 # Gerar a tabela LaTeX com formatação
-latex_table = df_text.head(10).to_latex(
+latex_table = df_text.head(8).to_latex(
     index=False, 
     escape=False,
     longtable=True, 
@@ -582,7 +612,7 @@ latex_table = latex_table.replace("\\\\\n", " \\\\\n\\hline\n")  # Adiciona linh
 print(latex_table)
 ```
 
-
+{{< pagebreak >}}
 
 A Escola Virtual de Governo (EVG) é uma plataforma de ensino a distância concebida e gerenciada pela Escola Nacional de Administração Pública (ENAP), vinculada ao Governo Federal brasileiro. Seu objetivo principal é oferecer capacitação gratuita e de qualidade para servidores públicos e cidadãos em geral, promovendo o desenvolvimento de competências relacionadas à gestão pública, políticas sociais, tecnologia e outras áreas do conhecimento estratégicas para o setor público.
 
@@ -606,6 +636,7 @@ Isto posto, o dataset da EVG foi escolhido devido à riqueza de informações te
 É importante destacar que, das 13 features do conjunto de dados, apenas quatro foram utilizadas no desenvolvimento dos sistemas de recomendação, conforme apresentado na @tbl-cursos-tail. A escolha dessas colunas se deve à necessidade de maximizar o uso de informações textuais disponíveis sobre cada curso, ampliando a base de conhecimento para a recomendação.
 
 Dado que o sistema de recomendação é inteiramente baseado em dados textuais (strings), colunas numéricas como carga horária, disponibilidade do curso e data de lançamento foram descartadas, pois não agregam valor semântico relevante. Além disso, seu uso poderia introduzir ruídos desnecessários no modelo, prejudicando a qualidade das recomendações.
+{{< pagebreak >}}
 
 Entre as features textuais, foram selecionadas apenas aquelas que fornecem informações extensas e únicas sobre os cursos: nome, apresentação e conteúdo programático. Essas colunas contêm descrições detalhadas sobre os temas abordados, facilitando a identificação de palavras-chave e relações semânticas. A coluna nome_curso, por sua vez, foi utilizada apenas para identificar cada capacitação em conjunto com seu respectivo ID.
 
@@ -714,7 +745,7 @@ Por conseguinte, a etapa de normalização dos vetores durante a extração dest
 
 
 ::: {#fig-cosin-matrix}
-![](imgs/heatmap.png){width=80%}
+![](imgs/heatmap.png){width=60%}
 
  **Heatmap das 10 primeiras entradas da matriz de similaridade do cosseno, que possui dimensão total de 807 × 807 para o dataset de cursos.**
 :::
@@ -731,6 +762,7 @@ Isto posto, resta claro que um dos principais desafios no presente contexto diz 
 
 Por fim, embora a similaridade do cosseno tenha sido escolhida para extracção dos resultados deste trabalho, serão apresentados, na secção seguinte ("Apresentação dos resultados"), testes comparativos que extraem recomendações para o mesmo item base, utilizando a similaridade do cosseno, a distância Euclidiana e a distância de Manhattan. O objectivo é analisar as principais diferenças nos resultados gerados por estas diferentes abordagens.
 
+{{< pagebreak >}}
 
 ### Construção das engines de recomendação: Desenvolvimento das Classes TfidfRecommender e SBERTRecommender 
 Após a obtenção e transformação dos dados, passou-se à construção efetiva dos sistemas de recomendação. Optou-se mais uma vez pelo uso da linguagem de programação python e do paradigma de orientação a objetos para facilitar a manutenção, organização e reutilização dos códigos fonte dos sistemas de recomendação. Foram implementadas duas classes distintas – TfidfRecommender e SBERTRecommender –, cada uma encapsulando o fluxo completo de seu respectivo algoritmo.
@@ -739,34 +771,37 @@ A partir deste momento, cada sistema de recomendação será analisado separadam
 
 - **TfidfRecommender**
 
-::: {#fig-class-tfidf}
-![](imgs/classe_tfidf.png){width=90%}
+:::{#fig-class-tfidf}
+![](imgs/classe_tfidf.png){width=100%}
 
- **Construtor da Classe TfidfRecommender**
+**Construtor da Classe TfidfRecommender**
 :::
 
-  - Bibliotecas e versão do Python utilizadas:
+{{< pagebreak >}}
+
++ Bibliotecas e versão do Python utilizadas:
     - **Python 3.12.3**
     - Pandas: Manipulação e estruturação dos dados em DataFrames.
     - re: Expressões regulares para limpeza e pré-processamento de texto.
     - nltk: Utilizado para processamento de linguagem natural, especialmente remoção de stopwords no caso em tela.
     - Sqlalchemy: Criação de conexão com banco de dados PostgreSQL para consulta dos dados.
     - Sklearn: Inicialização do tfidf, conversão de textos em vetores numéricos e cálculo da similaridade do cosseno via função linear_kernel.
+    - tqdm: Exibição de barra de progresso para acompanhar o processamento.
 
-  - Parâmetros ao instanciar a classe:
++ Parâmetros ao instanciar a classe:
     - **DB_USER, DB_PASS, DB_NAME, DB_HOST:** Dados relativos ao banco de dados onde as informações relevantes para desenvolvimento do modelo encontram-se.
     - **emb_cols:** Colunas textuais que serão utilizadas como fonte de informação para o modelo. Este é o parâmetro mais importante, vez que aqui o opoerador deve apontar aquelas fetaures de interesse no dataset que serão compiladas e servirão de base para extração dos vetores de representação textual.
     - **id_col:** Coluna na base de dados que contém a informação a respeito do identificador úncio de cada item a ser processado e recomendado.
     - **item_name_col:** Coluna que contém o título/nome do item a ser processado e recomendado adiante. Importante pois seu texto será adicionado às informações das colunas de emb_cols com vistas a maximizar os dados textuais sobre cada um dos itens.
     - **stopwords_extra:** Faculta ao opoerador do sistema de recomendação a opção de adicionar ainda mais stopwords à etapa de limpeza textual que façam sentido para aquele domínio específico, as quais serão adicionadas às stopwords previamente definidas pela biblioteca nltk e aplicadas à etapa de limpeza textual.
 
-  - Método "carrega_dados": 
++ Método "carrega_dados": 
     - Argumento(s) necessários: Nome da tabela no banco de dados que será utilizada como fonte de extração de texto para o modelo; 
     - Este método é responsável pela abertura do banco de dados relacional e carregamento das colunas textuais de interesse para o modelo. Utiliza-se para tanto os dados das features inseridos pelo operador ao instanciar a classe TfidfRecommender(emb_cols + item_name_col).
-  
-  - Método "_limpar_e_compilar_texto":
+  {{< pagebreak >}}
++ Método "_limpar_e_compilar_texto":
 
-  Considerando o fragmento original do texto descritivo do livro "As Mil e Uma Noites", observa-se um exemplo da aplicação do método "_limpar_e_compilar_texto" aos dados ora em comento:
+   - Considerando o fragmento original do texto descritivo do livro "As Mil e Uma Noites", observa-se um exemplo da aplicação do método "_limpar_e_compilar_texto" aos dados ora em comento:
 
 
   **"O livro apresenta as fábulas das 'Mil e uma Noites', com seu colorido oriental"**
@@ -818,40 +853,44 @@ latex_table = latex_table.replace("\\midrule", "\\hline")
 latex_table = latex_table.replace("\\bottomrule", "\\hline")
 
 # Adiciona \hline após cada linha de dados (exceto a última linha para evitar duplicação)
-latex_table = latex_table.replace("\\\\\n", " \\\\\n\\hline\n")
+newline = "\\\\\n"
+newline_with_hline = " \\\\\n\\hline\n"
+latex_table = latex_table.replace(newline, newline_with_hline)
 
 print(latex_table)
-
 ```
 
 
+
    - Executa a etapa de limpeza e preparação dos dados textuais das colunas que serão vetorizadas. Por se tratar do sistema de recomendação baseado em tfidf, o qual requer minuciosa etapa de limpeza dos dados para evitar-se redundâncias e ruídos que sobrecarreguem o sistema ao estender em demasia o vocabulário*(*bag-of-words*), aplicam-se aos dados as seguintes transformações: Remoção de acentos, sinais de pontuação e caracteres especiais; Alteração para que todas as palavras estejam em letras minúsculas; Remoção das stopwords pré-definidas pela biblioteca nltk + stopwords definidas pelo operador em stopwords_extra, se houverem; Junção do texto de todas as colunas textuais apontadas pelo operador em uma coluna chamada "compilado textual", a qual trará o texto do nome do item + o texto das demais colunas referentes ao texto de apresentação, eventual conteúdo programático e descrição. Esta coluna será utilizada como base para extração dos vetores que descrevem aquele item na matriz tfidf. Ressalta-se ainda que a nova variável criada prescinde de qualquer tratamento por já ter sido formada pela agregação de colunas limpas e transformadas.
+  {{< pagebreak >}}
++ Método "gerar_vetores":
+  - Recebe os dados da coluna "compilado_textual" limpos e compilados e aplica sobre eles o método tfidf_vectorizer da biblioteca scikit-learn, de modo a transformá-los nos vetores de representação textual numéricos que serão utilizados como base para a etapa de aplicação da similaridade do cosseno e posterior extração das recomendações;
+  - Calcula a matriz TF-IDF, onde cada linha representa um item (livro ou curso) e cada coluna representa um termo do vocabulário, atribuindo pesos conforme a importância relativa do termo no conjunto de dados. Isso permite que textos com palavras frequentes, mas pouco discriminativas, tenham menos peso, enquanto termos mais raros e relevantes recebam maior influência na representação vetorial.
+  - Utiliza a técnica de linear kernel para calcular a similaridade do cosseno entre os vetores da matriz TF-IDF. Esse cálculo mede o grau de proximidade entre os itens, atribuindo valores entre 0 e 1, onde 1 indica máxima similaridade e 0 indica ausência de relação.
+  - Armazena a matriz de similaridade do cosseno para que ela possa ser utilizada posteriormente no método de recomendação, garantindo que as consultas sejam feitas de forma eficiente sem necessidade de recalcular as similaridades a cada requisição.
+  - Cria um índice (self.indice), que mapeia os identificadores únicos dos itens (id_col) aos seus respectivos índices na matriz de similaridade, permitindo consultas rápidas para recomendações futuras.
+  - Exibe informações sobre a geração dos embeddings, incluindo o shape da matriz TF-IDF e amostras das matrizes TF-IDF e de similaridade do cosseno, para fins de depuração e análise da qualidade das representações vetoriais.
+
+{{< pagebreak >}}
++ Método "recomendar":
   
-- Método "gerar_vetores":
- - Recebe os dados da coluna "compilado_textual" limpos e compilados e aplica sobre eles o método tfidf_vectorizer da biblioteca scikit-learn, de modo a transformá-los nos vetores de representação textual numéricos que serão utilizados como base para a etapa de aplicação da similaridade do cosseno e posterior extração das recomendações;
- - Calcula a matriz TF-IDF, onde cada linha representa um item (livro ou curso) e cada coluna representa um termo do vocabulário, atribuindo pesos conforme a importância relativa do termo no conjunto de dados. Isso permite que textos com palavras frequentes, mas pouco discriminativas, tenham menos peso, enquanto termos mais raros e relevantes recebam maior influência na representação vetorial.
- - Utiliza a técnica de linear kernel para calcular a similaridade do cosseno entre os vetores da matriz TF-IDF. Esse cálculo mede o grau de proximidade entre os itens, atribuindo valores entre 0 e 1, onde 1 indica máxima similaridade e 0 indica ausência de relação.
- - Armazena a matriz de similaridade do cosseno para que ela possa ser utilizada posteriormente no método de recomendação, garantindo que as consultas sejam feitas de forma eficiente sem necessidade de recalcular as similaridades a cada requisição.
- - Cria um índice (self.indice), que mapeia os identificadores únicos dos itens (id_col) aos seus respectivos índices na matriz de similaridade, permitindo consultas rápidas para recomendações futuras.
- - Exibe informações sobre a geração dos embeddings, incluindo o shape da matriz TF-IDF e amostras das matrizes TF-IDF e de similaridade do cosseno, para fins de depuração e análise da qualidade das representações vetoriais.
+  ::: {#fig-funcao-recomend-tfidf}
+  ![](imgs/FUNC_RECOMEND_TFIDF.png){width=100%}
+  
+  **Demonstração da função que extrai as recomendações**
+  :::
+  
+    - Responsável por exibir as recomendações de itens mais similares ao item de entrada (input), utilizando a matriz de similaridade do cosseno previamente calculada. Ele recebe um ID de item e retorna os N itens mais similares, com base na proximidade vetorial entre os textos da matriz TF-IDF.
+    - Em primeira medida, recebe um ID de item e consulta a matriz de similaridade do cosseno previamente gerada para encontrar os itens mais similares ao item de entrada.
+    - A seguir, a partir do ID do item fornecido pelo usuário, o método busca seu índice na matriz TF-IDF utilizando self.indice[id_item]. O nome do item original é recuperado da base de dados (self.df_text) para ser exibido na saída, facilitando a interpretação do usuário.
+    - Obtém a linha correspondente ao item de entrada na matriz de similaridade do cosseno, recuperando os valores de similaridade em relação a todos os outros itens.
+    - Ordena os itens de maneira decrescente quanto à similaridade, garantindo que os mais relevantes apareçam primeiro (remove a própria entrada da lista para evitar que o item recomende a si mesmo devido a similaridade máxima).
+    - Seleciona os $n$ itens mais similares, conforme definido pelo usuário, garantindo que a recomendação seja ajustável às necessidades do sistema.
+    - Retorna um DataFrame contendo os IDs, nomes e scores de similaridade dos itens recomendados, de modo a facilitar a análise da qualidade daquilo que foi recomendado como sendo similar ao item de entrada.
+    - Exibe as recomendações de forma estruturada, apresentando o nome do item original e os itens sugeridos com seus respectivos scores.
 
-- Método "recomendar":
-
-::: {#fig-funcao-recomend-tfidf}
-![](imgs/FUNC_RECOMEND_TFIDF.png){width=90%}
-
- **Demonstração da função que extrai as recomendações**
-:::
-
- - Responsável por exibir as recomendações de itens mais similares ao item de entrada(input), utilizando a matriz de similaridade do cosseno previamente calculada. Ele recebe um ID de item e retorna os N itens mais similares, com base na proximidade vetorial entre os textos embutidos via TF-IDF.
- - Em primeira medida, recebe um ID de item e consulta a matriz de similaridade do cosseno previamente gerada para encontrar os itens mais similares ao item de entrada.
- - A seguir, a partir do ID do item fornecido pelo usuário, o método busca seu índice na matriz TF-IDF utilizando self.indice[id_item]. O nome do item original é recuperado da base de dados (self.df_text) para ser exibido na saída, facilitando a interpretação do usuário.
- - Obtém a linha correspondente ao item de entrada na matriz de similaridade do cosseno, recuperando os valores de similaridade em relação a todos os outros itens.
- - Ordena os itens de maneira decrescente quanto à similaridade, garantindo que os mais relevantes apareçam primeiro(remove a própria entrada da lista para evitar que o item recomende a si mesmo devido a similaridade máxima).
- - Seleciona os $$N$$ itens mais similares, conforme definido pelo usuário, garantindo que a recomendação seja ajustável às necessidades do sistema.
- - Retorna um DataFrame contendo os IDs, nomes e scores de similaridade dos itens recomendados, de modo a facilitar a análise da qualidade daquilo que foi recomendado como sendo similar ao item de entrada.
- - Exibe as recomendações de forma estruturada, apresentando o nome do item original e os itens sugeridos com seus respectivos scores.
-
+{{< pagebreak >}}
 
 - **SBERTRecommender**
 
@@ -873,7 +912,7 @@ print(latex_table)
     - dotenv: Carregamento seguro de variáveis de ambiente sensíveis, como credenciais do banco de dados.
     - warnings: Supressão de mensagens de aviso durante a execução do código.
     - os: Manipulação de variáveis de ambiente e configurações do sistema.
-
+{{< pagebreak >}}
 - Parâmetros ao instanciar a classe:
     - **DB_USER, DB_PASS, DB_NAME, DB_HOST:** Dados relativos ao banco de dados onde as informações relevantes para desenvolvimento do modelo encontram-se.
     - **emb_cols:** Colunas textuais que serão utilizadas como fonte de informação para o modelo. Aqui o operador deve apontar as features de interesse no dataset que serão compiladas e servirão de base para extração dos vetores de representação textual.
@@ -882,40 +921,28 @@ print(latex_table)
     - **model_name:** Atalho para o modelo a ser utilizado para geração dos embeddings textuais. Permite flexibilidade na escolha de diferentes versões do modelo, a depender do domínio da aplicação. **No caso em tela utilizou-se o modelo "paraphrase-multilingual-MiniLM-L12-v2" da biblioteca Sentence Transformers**, entretanto outros modelos poderiam ter sido aplicados.
 
 - **Método "carrega_dados"**:  
-    - **Argumento(s) necessários:** Nome da tabela no banco de dados que será utilizada como fonte de extração de texto para o modelo.  
-    - **Descrição:** Este método é responsável por estabelecer a conexão com o banco de dados PostgreSQL e carregar as colunas textuais de interesse definidas pelo operador ao instanciar a classe. Ele executa uma query SQL para extrair os dados das colunas especificadas em `emb_cols` e `item_name_col`, e define `id_col` como o identificador único de cada item.  
-    - **Fluxo de execução:**  
-        1. Conecta-se ao banco de dados utilizando as credenciais informadas na inicialização da classe.  
-        2. Executa uma consulta SQL para selecionar as colunas de interesse na tabela especificada.  
-        3. Armazena os dados extraídos em um DataFrame Pandas (`df_text`).  
-        4. Remove valores nulos, para que apenas registros completos sejam utilizados na geração dos embeddings.  
+    - Argumento(s) necessários: Nome da tabela no banco de dados que será utilizada como fonte de extração de texto para o modelo.  
+    - Este método é responsável por estabelecer a conexão com o banco de dados PostgreSQL e carregar as colunas textuais de interesse definidas pelo operador ao instanciar a classe. Ele executa uma query SQL para extrair os dados das colunas especificadas em "emb_cols" e "item_name_col", e define "id_col" como o identificador único de cada item.   
 
 - **Método "limpa_dados"**:  
-    - **Argumento(s) necessários:** DataFrame contendo as colunas textuais extraídas do banco de dados.  
-    - **Descrição:** Método responsável pela limpeza e pré-processamento dos textos antes da geração dos embeddings densos pelo modelo. Aplica técnicas padronizadas de tratamento textual, removendo ruídos e normalizando os dados para melhorar a qualidade das representações geradas. Destaca-se o fato de ser uma limpeza menos complexa que aquela realizada no sistema de recomendação, haja vista a menor sensibilidade às nuances de padronização de vocabulário neste sistema.   
-    - **Fluxo de execução:**  
-        1. Converte todos os textos para letras minúsculas para garantir uniformidade.  
-        2. Elimina espaços em demasia.  
-        3. Tokeniza os textos.  
-        4. Remove stopwords padrão da biblioteca NLTK; Diferente do sistema anterior, aqui não serão definidas stopwords além das pré-definidas pela biblioteca em comento;   
-        6. Agrupa o texto de todas as colunas textuais apontadas pelo operador em uma coluna chamada "compilado textual", a qual trará o texto do nome do item + o texto das demais colunas que serão utilizadas para extração dos vetores textuais(emb_cols). Ressalta-se ainda que a nova variável criada prescinde de qualquer tratamento por já ter sido formada pela agregação de colunas limpas e transformadas.  
-
+    - Argumento(s) necessários: DataFrame contendo as colunas textuais extraídas do banco de dados.  
+    - Método responsável pela limpeza e pré-processamento dos textos antes da geração dos embeddings densos pelo modelo. Aplica técnicas padronizadas de tratamento textual, removendo ruídos e normalizando os dados para melhorar a qualidade das representações geradas. Destaca-se o fato de ser uma limpeza menos complexa que aquela realizada no sistema de recomendação anterior, haja vista a menor sensibilidade às nuances de padronização de vocabulário neste modelo.   
+     
+{{< pagebreak >}}
 - **Método "embeddings_extract"**:  
-    - **Argumento(s) necessários:**  
-      - `batch_size` (padrão: 64): Define o lote de sentenças a serem processadas simultaneamente para otimização do uso de memória.  
-    - **Descrição:**  
-      - Este método é essencial para o funcionamento do sistema, pois é responsável pela geração dos embeddings (vetores numéricos densos) a partir dos textos processados na etapa de anterior. Utiliza-se um modelo de deep learning para converter os textos em embedings densos, de modo a permitir cálculos de similaridade eficientes.  
+    - Argumento(s) necessários: batch_size (padrão: 64): Define o lote de sentenças a serem processadas simultaneamente para otimização do uso de memória.  
+    - Este método é essencial para o funcionamento do sistema, pois é responsável pela geração dos embeddings (vetores numéricos densos) a partir dos textos processados na etapa de anterior. Utiliza-se um modelo de deep learning para converter os textos em embedings densos, de modo a permitir cálculos de similaridade eficientes.  
     - **Fluxo de execução:**  
-      1. Inicialização da coluna `'embeddings'` no DataFrame, preparando-a para armazenar os vetores.  
-      2. Divide os textos em lotes menores (`batch_size`) para evitar sobrecarga de memória e melhora a eficiência do processamento.  
+      1. Inicialização da coluna "embeddings" no DataFrame, preparando-a para armazenar os vetores.  
+      2. Divide os textos em lotes menores (batch_size) para evitar sobrecarga de memória e melhora a eficiência do processamento.  
       3. Para cada lote:  
-         - Extrai os textos da coluna `'compilado_textual'`, garantindo que existam dados para processar.  
+         - Extrai os textos da coluna "compilado_textual", garantindo que existam dados para processar.  
          - Usa o modelo de embeddings apontado pelo usuário ao instanciar a classe para efetivamente transformar os textos em vetores numéricos.  
          - Converte os embeddings gerados para listas e os armazena na coluna apropriada.   
-      4. Empilha os vetores de embeddings resultantes em uma matriz 2D usando `torch.stack`, consolidando-os em um formato adequado para cálculos de similaridade.  
+      4. Empilha os vetores de embeddings resultantes em uma matriz 2D usando "torch.stack", consolidando-os em um formato adequado para cálculos de similaridade.  
     - **Tratamento de erros:**  
       - Se um erro ocorrer durante a geração dos embeddings, o processamento é interrompido e uma mensagem de erro é exibida.  
-      - Caso todos os embeddings sejam `None`, uma exceção é levantada para alertar sobre possíveis problemas nos dados de entrada.  
+      - Caso todos os embeddings sejam "None", uma exceção é levantada para alertar sobre possíveis problemas nos dados de entrada.  
 
 
   - **Método "recomendar_itens"**:  
@@ -925,18 +952,9 @@ print(latex_table)
 
   **Função responsável pela extração das recomendações**
   :::
-    - **Argumento(s) necessários:**  
-      - `id_item`: Identificador único do item para o qual as recomendações serão geradas. Aqui é atribuído manualmente, mas em um contexto de produção diz respeito, por exemplo, ao último item adquirido ou pesquisado pelo usuário.  
-      - `top_n` (padrão: 3): Número de recomendações mais similares a serem retornadas.  
-    - **Descrição:**  
-      - Este método realiza efetivamente a recomendação de itens relevantes com base na matriz de similaridade do cosseno entre os embeddings previamente gerados. Trata-se da etapa final do fluxo de recomendação baseado em vetores densos.  
-    - **Fluxo de execução:**   
-      1. Verifica se `id_item` existe na base de dados. Caso contrário, exibe uma mensagem e interrompe a execução.  
-      2. Calcula a similaridade do cosseno entre o embedding do item selecionado e todos os outros embeddings dos demais itens da base.  
-      3. Ordena os itens pela maior similaridade e seleciona os `top_n` mais similares, excluindo-se da relação o próprio item consultado, haja vista sua similaridade máxima(identidade).  
-      4. Cria um DataFrame para exibição dos itens recomendados. Caso nenhuma recomendação seja encontrada, exibe uma mensagem apropriada.
-    - **Tratamento de erros:**  
-      - Se o `id_item` não for encontrado na base de dados relacional, a função interrompe a execução e exibe uma mensagem de erro.  
+    - Argumento(s) necessários: id_item: Identificador único do item para o qual as recomendações serão geradas. Aqui é atribuído manualmente, mas em um contexto de produção diz respeito, por exemplo, ao último item adquirido ou pesquisado pelo usuário; top_n (padrão: 3): Número de recomendações mais similares a serem retornadas.  
+    - Este método realiza efetivamente a recomendação de itens relevantes com base na matriz de similaridade do cosseno entre os embeddings previamente gerados. Trata-se da etapa final do fluxo de recomendação baseado em vetores densos.  
+
     
 ### Metodologia de avaliação das recomendações
 Para perceber de maneira clara o método a ser utilizado para avaliar as recomendações geradas no âmbito deste projecto, há de se delinear ainda que de maneira superficial as diferenças entre a aprendizagem de máquina supervisionada e não supervisionada.
@@ -971,13 +989,13 @@ Por conseguinte, haja vista que a base de cursos possui apenas 806 itens, serão
 a) **Item Base: "Estatística Para Análise De Dados Na Administração Pública"**
 
 - Texto descritivo: Estatística de forma simples, objetiva e prática é o que você encontrará neste curso! Faça sua inscrição e aprenda a organizar, analisar dados, determinar suas correlações e a reconhecer os princípios da estatística descritiva em linguagem R para analisar dados na Administração Pública. Matricule-se e faça parte da estatística daqueles que buscam crescimento pessoal e profissional se aperfeiçoando com os cursos da EV.G.
-
+{{< pagebreak >}}
 > **Tfidf Recommender:**
 
 ```{python}
 #| output: asis
 #| label: tbl-curso-930-tfidf
-#| tbl-cap: Recomendações para o Curso 930 - TFIDF
+#| tbl-cap: Recomendações mais similares ao curso "Estatística Para Análise De Dados Na Administração Pública" - TFIDF
 #| tbl-pos: H
 #| tbl-width: 5
 
@@ -1008,7 +1026,7 @@ print(latex_table)
 ```{python}
 #| output: asis
 #| label: tbl-curso-930-sbert
-#| tbl-cap: Recomendações para o Curso 930 - SBERT
+#| tbl-cap: Recomendações mais similares ao curso "Estatística Para Análise De Dados Na Administração Pública" - SBERT
 #| tbl-pos: H
 #| tbl-width: 5
 
@@ -1033,7 +1051,7 @@ print(latex_table)
 
 ```
 
-- Ressalta-se preliminarmente que, ao analisar o contexto em que o curso base insere-se, todas as recomendações de ambos os sistemas estão ajustas à realidade e são assertivas no que diz respeito à trilha de aprendizado pretendida pelo usuário.
+- Ressalta-se preliminarmente que, ao analisar o contexto em que o curso base insere-se, todas as recomendações de ambos os sistemas estão ajustas à realidade e são assertivas no que diz respeito à trilha de aprendizado possivelmente pretendida pelo usuário.
 - Ademais, as recomendações de ambos os sistemas foram similares para este caso, o que demonstra que o sistema mais rudimentar e baseado em *bag-of-words* (TFIDF) também pode ser útil a depender do contexto de aplicação. A diferença, contudo, parece estar no grau de confiança. Enquanto o SBERT recomenda "Introdução à Ciência de Dados - Estatística Essencial" com um grau de proximidade elevado (0.729554), o sistema TFIDF recomenda o mesmo curso com grau de similaridade consideravelmente menor (0.434109).
 - Chama a atenção ainda a ordem das recomendações. Se para o sistema mais avançado (SBERT) o usuário deve realizar o curso "Análise de Dados em Linguagem R" imediatamente após a realização de "Estatística Para Análise De Dados Na Administração Pública", para o outro sistema deve-se realizar o curso de "Introdução à Ciência de Dados - Estatística Essencial".
 - Por último, é salutar ressaltar que a recomendação do curso "Governança de Dados" pelo primeiro sistema pode ser um indicativo da sua principal limitação: A não captação de contexto, reduzindo-se a coincidências lexicais entre palavras-chave. De outro giro, o segundo sistema claramente priorizou cursos mais alinhados ao foco do item-base, sobretudo no que tange à perspectiva quantitativa/estatística. 
@@ -1047,7 +1065,7 @@ b) **Item Base: "S2Id - M2 - Usuário Federal - Solicitação De Recursos Para A
 ```{python}
 #| output: asis
 #| label: tbl-curso-753-tfidf
-#| tbl-cap: Recomendações para o Curso 753 - TFIDF
+#| tbl-cap: Recomendações mais similares ao curso "S2Id - M2 - Usuário Federal - Solicitação De Recursos Para Ações De Resposta" - TFIDF
 #| tbl-pos: H
 #| tbl-width: 5
 
@@ -1078,7 +1096,7 @@ print(latex_table)
 ```{python}
 #| output: asis
 #| label: tbl-curso-753-sbert
-#| tbl-cap: Recomendações para o Curso 753 - SBERT
+#| tbl-cap: Recomendações mais similares ao curso "S2Id - M2 - Usuário Federal - Solicitação De Recursos Para Ações De Resposta" - SBERT
 #| tbl-pos: H
 #| tbl-width: 5
 
@@ -1104,7 +1122,7 @@ print(latex_table)
 ```
 
 - Ao analisar as recomendações atribuídas por ambos os sistemas para o curso em questão, resta claro a elevada capacidade das duas abordagens em captar e recomendar cursos sequenciais. Resta claro que todos os cursos recomendados fazem parte do mesmo ecossistema do curso base, sendo portanto sequências lógicas e naturais prontamente identificadas pelos modelos;
-- Chama atenção novamente o grau de confiança de cada modelo de acordo com a similaridade do cosseno apontada entre o curso base e os recomendados. O SBERT chega a apontar uma relação de quase identidade (0.93) entre as capacitações “S2Id - M2 - Usuário Federal - Solicitação De Recursos Para Ações De Resposta” e "S2ID - M2 - Usuário Federal - Liberação de Recursos para Ações de Resposta", enquanto o TFIDF aponta apenas 0.58.
+- Chama atenção novamente a enorme diferença no grau de similaridade do cosseno apontado por cada modelo entre o curso base e os recomendados. O SBERT chega a apontar uma relação de quase identidade (0.93) entre as capacitações “S2Id - M2 - Usuário Federal - Solicitação De Recursos Para Ações De Resposta” e "S2ID - M2 - Usuário Federal - Liberação de Recursos para Ações de Resposta", enquanto o TFIDF aponta apenas 0.58.
 
 c) **Item Base: "Microeconomia"**
 
@@ -1115,7 +1133,7 @@ c) **Item Base: "Microeconomia"**
 ```{python}
 #| output: asis
 #| label: tbl-curso-92-tfidf
-#| tbl-cap: Recomendações para o Curso 92 - TFIDF
+#| tbl-cap: Recomendações mais similares ao curso "Microeconomia" - TFIDF
 #| tbl-pos: H
 #| tbl-width: 5
 
@@ -1146,7 +1164,7 @@ print(latex_table)
 ```{python}
 #| output: asis
 #| label: tbl-curso-92-sbert
-#| tbl-cap: Recomendações para o Curso 92 - SBERT
+#| tbl-cap: Recomendações mais similares ao curso "Microeconomia" - SBERT
 #| tbl-pos: H
 #| tbl-width: 5
 
@@ -1173,27 +1191,697 @@ print(latex_table)
 
 - Novamente ambos os modelos performam de maneira satisfatória no que diz respeito à similaridade semântica, temática e contextual entre o item base e as recomendações;
 - Há mais uma vez uma quase sobreposição das recomendações entre os dois modelos, o que soa perfeitamente normal haja vista ser uma base pequena, com apenas 807 itens. Ainda assim, nota-se mais uma vez uma ligeira vantagem nas recomendações exaradas pelo modelo SBERT, pois os três itens apontados no caso em tela possuem elevada semelhança com a temática da microeconomia, enquanto o último item recomendado pelo TFIDF pode nã ser tão relevante ao usuário que realizou a capacitação em Microeconomia.
-- Por fim, salta aos olhos novamente FALAR DA DIFERENCA NOS VALORES DA SIM COSS. CITAR DEEP. CITAR QUE PODE SER UM PROBLEMA SE GESTPR DO SISTEMA DECIDIR POR DEFINIR TRESHOLD DE SIMILARIDADE MINIMA. 
+- Por fim, nota-se outra vez uma importante diferença no valor da similaridade do cosseno apontado em ambos os sistemas. Se para o TFIDF o curso Macroeconomia possui similaridade de apenas 0.21 ao item base, para o SBERT esta similaridade sobe para 0.83. Apesar de não constituir um problema à primeira vista, vez que ambos os sistemas recomendariam o curso, caso o gestor/operador optasse por definir um treshold mínimo de similaridade em 0.5, por exemplo, para evitar recomendações abaixo deste limiar, o TFIDF não traria nenhuma recomendação e perderia eficácia. 
+
+d) **Item Base: "Conceitos Essenciais Sobre Patologias Em Estruturas De Concreto"**
+
+- Texto descritivo: Este curso apresenta os principais conceitos aplicados ao desenvolvimento de projetos e estudos sobre patologias em estruturas de concreto armado. Você conhecerá os conceitos essenciais para se trabalhar no processo de identificação das principais manifestações patológicas, especialmente aquelas que ocorrem em Obras de Arte Especiais (OAE). Quer saber mais? Inscreva-se!.
+
+> **Tfidf Recommender:**
+
+```{python}
+#| output: asis
+#| label: tbl-curso-889-tfidf
+#| tbl-cap: Recomendações mais similares ao curso "Conceitos Essenciais Sobre Patologias Em Estruturas De Concreto" - TFIDF
+#| tbl-pos: H
+#| tbl-width: 5
+
+recomendacoes = pd.read_csv("/Users/pedroh.mello/Desktop/MESTRADO_MCDE/SEMINARIO/PROJETO_CONCLUSAO_MESTRADO/data/tbls_recomends_resultado/tfidf_curso_889.csv", index_col=0)
+
+# Gerar a tabela LaTeX com formatação
+latex_table = recomendacoes.to_latex(
+    index=False, 
+    escape=False, 
+    column_format="|c|l|c|",  # Ensures correct alignment
+    header=["Item Recomendado", "Similaridade Cosseno"]
+)
+
+# Ajustar bordas da tabela
+latex_table = latex_table.replace("\\toprule", "\\hline")
+latex_table = latex_table.replace("\\midrule", "\\hline")
+latex_table = latex_table.replace("\\bottomrule", "\\hline")
+latex_table = latex_table.replace("\\\\\n", " \\\\\n\\hline\n")  # Adiciona linhas horizontais entre as linhas
+
+# Exibir a tabela no formato LaTeX
+print(latex_table)
+
+```
+
+
+> **SBERTrecommender:**
+
+```{python}
+#| output: asis
+#| label: tbl-curso-889-sbert
+#| tbl-cap: Recomendações mais similares ao curso "Conceitos Essenciais Sobre Patologias Em Estruturas De Concreto" - SBERT
+#| tbl-pos: H
+#| tbl-width: 5
+
+recomendacoes = pd.read_csv("/Users/pedroh.mello/Desktop/MESTRADO_MCDE/SEMINARIO/PROJETO_CONCLUSAO_MESTRADO/data/tbls_recomends_resultado/sbert_curso_889.csv", index_col=0)
+
+# Gerar a tabela LaTeX com formatação
+latex_table = recomendacoes.to_latex(
+    index=False, 
+    escape=False, 
+    column_format="|c|l|c|",  # Ensures correct alignment
+    header=["Item Recomendado", "Similaridade Cosseno"]
+)
+
+# Ajustar bordas da tabela
+latex_table = latex_table.replace("\\toprule", "\\hline")
+latex_table = latex_table.replace("\\midrule", "\\hline")
+latex_table = latex_table.replace("\\bottomrule", "\\hline")
+latex_table = latex_table.replace("\\\\\n", " \\\\\n\\hline\n")  # Adiciona linhas horizontais entre as linhas
+
+# Exibir a tabela no formato LaTeX
+print(latex_table)
+
+```
+
+- Aqui pela primeira vez o **TFIDF demonstra de maneira clara a sua principal limitação: A falta de captação de contexto semântico, e elevada sensibilidade à polissemia.** Isto fica evidente ao comparar-se a primeira recomendação, qual seja, "Estruturas Organizacionais do Poder Executivo Federal - Siorg" com o item base. O sistema TFIDF não possui a capacidade de distinguir a polissemia existente no termo "estrutura", que diz respeito a uma construção física pertencente ao domínio da Engenharia Civil para o caso do item base e de um órgão ou organização hierárquica no caso do curso que está a ser recomendado como o mais similar.
+- O modelo SBERT, por sua vez, demonstra-se capaz de perceber o siginificado contextual do item base ao recomendar capacitações que dizem respeito a riscos e segurança no âmbito da engenharia. Isto enfatiza a grande evolução que a arquitetura de tranformers e a captação de contexto representam no campo do PLN, se comparado às abordagens baseadas em *bag-of-words*, conforme o caso do TFIDF e CountVectorizer.
+
+e) **Item Base: "Aprendendo com Python"**
+
+- Texto descritivo: Este curso aprofunda os fundamentos da ciência da computação em termos de variáveis, condicionais, loops e funções usando a sintaxe de programação do Python. Aprenda como aplicar esta linguagem para resolver vários problemas e usar seus frameworks / bibliotecas / pacotes para diferentes contextos. Este curso também está disponível na versão inglês.
+
+> **Tfidf Recommender:**
+
+```{python}
+#| output: asis
+#| label: tbl-curso-6299-tfidf
+#| tbl-cap: Recomendações mais similares ao curso "Aprendendo com Python" - TFIDF
+#| tbl-pos: H
+#| tbl-width: 5
+
+recomendacoes = pd.read_csv("/Users/pedroh.mello/Desktop/MESTRADO_MCDE/SEMINARIO/PROJETO_CONCLUSAO_MESTRADO/data/tbls_recomends_resultado/tfidf_curso_629.csv", index_col=0)
+
+# Gerar a tabela LaTeX com formatação
+latex_table = recomendacoes.to_latex(
+    index=False, 
+    escape=False, 
+    column_format="|c|l|c|",  # Ensures correct alignment
+    header=["Item Recomendado", "Similaridade Cosseno"]
+)
+
+# Ajustar bordas da tabela
+latex_table = latex_table.replace("\\toprule", "\\hline")
+latex_table = latex_table.replace("\\midrule", "\\hline")
+latex_table = latex_table.replace("\\bottomrule", "\\hline")
+latex_table = latex_table.replace("\\\\\n", " \\\\\n\\hline\n")  # Adiciona linhas horizontais entre as linhas
+
+# Exibir a tabela no formato LaTeX
+print(latex_table)
+
+```
+
+
+> **SBERTrecommender:**
+
+```{python}
+#| output: asis
+#| label: tbl-curso-629-sbert
+#| tbl-cap: Recomendações mais similares ao curso "Aprendendo com Python" - SBERT
+#| tbl-pos: H
+#| tbl-width: 5
+
+recomendacoes = pd.read_csv("/Users/pedroh.mello/Desktop/MESTRADO_MCDE/SEMINARIO/PROJETO_CONCLUSAO_MESTRADO/data/tbls_recomends_resultado/sbert_curso_629.csv", index_col=0)
+
+# Gerar a tabela LaTeX com formatação
+latex_table = recomendacoes.to_latex(
+    index=False, 
+    escape=False, 
+    column_format="|c|l|c|",  # Ensures correct alignment
+    header=["Item Recomendado", "Similaridade Cosseno"]
+)
+
+# Ajustar bordas da tabela
+latex_table = latex_table.replace("\\toprule", "\\hline")
+latex_table = latex_table.replace("\\midrule", "\\hline")
+latex_table = latex_table.replace("\\bottomrule", "\\hline")
+latex_table = latex_table.replace("\\\\\n", " \\\\\n\\hline\n")  # Adiciona linhas horizontais entre as linhas
+
+# Exibir a tabela no formato LaTeX
+print(latex_table)
+
+```
+
+- Ao examinar as similaridades emitidas pelos dois sistemas, percebe-se novamente uma superioridade nas recomendações do sistema contextual. Enquanto este percebe o python enquanto linguagem de programação e instrumento fundamental ao domínio da ciência de dados, o outro sistema não foi capaz de reconhecer tais características, recomendando de maneira assertiva tão somente a mesma capacitação em língua inglesa por conta da coincidência lexical do termo "python" em seu título e texto de apresentação.
+- Por conseguinte, apesar de a análise deste projecto concentrar-se na produção de sistemas de recomendação capazes de atuar sobre dados textuais em língua portuguesa, percebe-se a polivalência do modelo SBERT ao lidar também com textos em língua inglesa. Isto se deve ao fato de o modelo que está a ser utilizado, qual seja o "paraphrase-multilingual-MiniLM-L12-v2" da biblioteca sentence transformers/HuggingFace, ter sido treinado em 50 línguas diferentes, dentre elas o inglês. Assim sendo, conforme apontado no texto de descrição do curso base, existe a oferta do mesmo curso porém em língua inglesa na plataforma, e o modelo aponta uma similaridade do cosseno muito elevada entre eles(0.92), enquanto o recomender anterior apontou similaridade de apenas 0.14 entre eles.
  
 
 
 ## Dataset "Livros"
 
+A exemplo do que foi feito anteriormente as recomendações desta secção continuam a ser intepretadas da mesma maneira: Considera-se como "item base" o último item consumido/pesquisado/favoritado pelo usuário. A partir deste item, recomendam-se os mais similares.
 
-INSERIR UMA PRIMEIRA PARTE COM TESTES DE DIFERENTES METRICAS DE SIMILARIDADE. DIZER QUE MANHATTAN NAO SE MOSTROU ADEQUADA E EUCLIDEAN, APESAR DE RESULTADOS PROXIMOS EM AMBOS OS RECOMENDERS, TORNA A INTERPRETAÇAO E A EXPLICACAO DOS RESULTADOS MUITO MAIS COMPLEXA SE COMPARADA A SIMILARIODADE DO COSSENO. (LEMBRAR QUE VETORES TFIDF SAO NORMALIZADOS E POR ISSO EUCLIDEAN E COSINE PODEM TER SIDO TAO SEMELHANTES)
+Neste ponto, por tratar-se de uma base com quase 30.000 itens, serão extraídas e apresentadas as 6 principais recomendações para cada modelo.
+
+a) **Item Base: "A bíblia do vinho"**
+
+- Autor: Karen MacNeil
+- Texto descritivo: O que torna um vinho grande? Qual é a razão das borbulhas do Champagne? Por que os vinhedos de solos muito ruins, e que fazem as videiras sofrerem, podem originar grandes vinhos? Este livro mostra os segredos dos degustadores profissionais e como aumentar seu vocabulário de degustação. A obra abrange todos os aspectos essenciais dos países produtores de vinho, descreve os maiores vinhedos de vinhos finos do mundo e apresenta informações sobre os vinhos de diversas regiões do mundo.
+
+> **Tfidf Recommender:**
+
+```{python}
+#| output: asis
+#| label: tbl-livro-9788500012952-tfidf
+#| tbl-cap: Recomendações mais similares ao Livro "A bíblia do vinho" - TFIDF
+#| tbl-pos: H
+#| tbl-width: 5
+
+recomendacoes = pd.read_csv("/Users/pedroh.mello/Desktop/MESTRADO_MCDE/SEMINARIO/PROJETO_CONCLUSAO_MESTRADO/data/tbls_recomends_resultado/tfidf_livro_9788500012952.csv", index_col=0)
+
+# Gerar a tabela LaTeX com formatação
+latex_table = recomendacoes.to_latex(
+    index=False, 
+    escape=False, 
+    column_format="|c|l|c|",  # Ensures correct alignment
+    header=["Item Recomendado", "Similaridade Cosseno"]
+)
+
+# Ajustar bordas da tabela
+latex_table = latex_table.replace("\\toprule", "\\hline")
+latex_table = latex_table.replace("\\midrule", "\\hline")
+latex_table = latex_table.replace("\\bottomrule", "\\hline")
+latex_table = latex_table.replace("\\\\\n", " \\\\\n\\hline\n")  # Adiciona linhas horizontais entre as linhas
+
+# Exibir a tabela no formato LaTeX
+print(latex_table)
+
+```
+{{< pagebreak >}}
+
+> **SBERTrecommender:**
+
+```{python}
+#| output: asis
+#| label: tbl-livro-9788500012952-sbert
+#| tbl-cap: Recomendações mais similares ao Livro "A bíblia do vinho" - SBERT
+#| tbl-pos: H
+#| tbl-width: 5
+
+recomendacoes = pd.read_csv("/Users/pedroh.mello/Desktop/MESTRADO_MCDE/SEMINARIO/PROJETO_CONCLUSAO_MESTRADO/data/tbls_recomends_resultado/sbert_livro_9788500012952.csv", index_col=0)
+
+# Gerar a tabela LaTeX com formatação
+latex_table = recomendacoes.to_latex(
+    index=False, 
+    escape=False, 
+    column_format="|c|l|c|",  # Ensures correct alignment
+    header=["Item Recomendado", "Similaridade Cosseno"]
+)
+
+# Ajustar bordas da tabela
+latex_table = latex_table.replace("\\toprule", "\\hline")
+latex_table = latex_table.replace("\\midrule", "\\hline")
+latex_table = latex_table.replace("\\bottomrule", "\\hline")
+latex_table = latex_table.replace("\\\\\n", " \\\\\n\\hline\n")  # Adiciona linhas horizontais entre as linhas
+
+# Exibir a tabela no formato LaTeX
+print(latex_table)
+
+```
+
+- Partindo-se dos referenciais metodológicos propostos neste trabalho, os resultados de ambos os sistemas parecem consistentes, seguros e assertivos, o que pode ser percebido ao comparar-se as nuances semânticas e contextuais entre o item base e todos os itens recomendados;
+- Consoante tudo aquilo que fora mencionado nos resultados da aplicação dos sitemas à base de dados anterior(cursos), observa-se mais uma vez a mesma tendência: Enquanto o TFIDF foca em sobreposição lexical, ao indicar itens diretamente relacionados à palavra "vinho" e demais palavras-chave adjacentes constantes aos campos de descrição textual destas obras literárias, o SBERT vai além e demonstra sua capacidade avançada de captação de relações contextuais ao indicar não somente obras relativas às técnicas de degustação de vinhos mas também outros subtemas como história e cultura da bebida, como por exemplo em "história da bebedeira" e "Os ignorantes", este último escrito por Étienne Davodeau, que explora a intersecção entre a produção de vinhos e a criação artística em banda desenhada, destacando a dimensão humana e cultural compartilhada entre essas práticas.
+- Por fim, observa-se que os valores de similaridade do cosseno variam em faixas significativamente mais altas no SBERT(0.73 – 0.77) se comparado ao TFIDF(0.26 – 0.42). 
 
 
-DIVIDIR EM 2: PRIMEIRO, RESULTADOS APÓS APLICAÇAO AO DATASET DE CURSOS (MENOR VOLUME); SEGUBNDO, RESULTADOS APOS APLICAÇAO AO DATASET DE LIVROS(MAIS VOLUMOSO E COMPLEXO); DETALHAR MINUCIOSAMWNTE A DIFERENCA NA CASPTAÇAO DE CONTEXTO, TEMPO DE PROCESSMANETO PARA AMBAS AS ABORDAGENS ETC.
+b) **Item Base: "O homem mais rico da Babilônia"**
 
-# USE CASE:
+- Autor: George Samuel Clason
+- Texto descritivo: Traz orientações através de parábola ambientada na Babilônia sobre como ter sucesso financeiro, ganhando dinheiro, sabendo poupá-lo e tendo mais lucro.
+{{< pagebreak >}}
+> **Tfidf Recommender:**
 
-## Aplicação do Recommender SBERT aos dados da PNDP
-CITAR RAPIDAMENTE APLICAÇÃO NA EXTRAÇÃO DE RECOMENDAÇOES PARA PNDP. RESSALTAR ECONOMIA DE RECURSOS E GANHO DE EFICIENCIA.
+```{python}
+#| output: asis
+#| label: tbl-livro-9788500003042-tfidf
+#| tbl-cap: Recomendações mais similares ao Livro "O homem mais rico da Babilônia" - TFIDF
+#| tbl-pos: H
+#| tbl-width: 5
 
-INSERIR CAPTURA DE TELA DO APP STREAMLIT DESENVOLVIDO E RESSALTAR A FUNCIONALIDADE DE O GESTOR PODER ALTERAR A SIMILARIDADE DO COSSENO PARA AUMENTAR OU DIMINUIR O RIGOR NA HORA DE RECOMENDAR
+recomendacoes = pd.read_csv("/Users/pedroh.mello/Desktop/MESTRADO_MCDE/SEMINARIO/PROJETO_CONCLUSAO_MESTRADO/data/tbls_recomends_resultado/tfidf_livro_9788500003042.csv", index_col=0)
+
+# Gerar a tabela LaTeX com formatação
+latex_table = recomendacoes.to_latex(
+    index=False, 
+    escape=False, 
+    column_format="|c|l|c|",  # Ensures correct alignment
+    header=["Item Recomendado", "Similaridade Cosseno"]
+)
+
+# Ajustar bordas da tabela
+latex_table = latex_table.replace("\\toprule", "\\hline")
+latex_table = latex_table.replace("\\midrule", "\\hline")
+latex_table = latex_table.replace("\\bottomrule", "\\hline")
+latex_table = latex_table.replace("\\\\\n", " \\\\\n\\hline\n")  # Adiciona linhas horizontais entre as linhas
+
+# Exibir a tabela no formato LaTeX
+print(latex_table)
+
+```
+
+
+> **SBERTrecommender:**
+
+```{python}
+#| output: asis
+#| label: tbl-livro-9788500003042-sbert
+#| tbl-cap: Recomendações mais similares ao Livro "O homem mais rico da Babilônia" - SBERT
+#| tbl-pos: H
+#| tbl-width: 5
+
+recomendacoes = pd.read_csv("/Users/pedroh.mello/Desktop/MESTRADO_MCDE/SEMINARIO/PROJETO_CONCLUSAO_MESTRADO/data/tbls_recomends_resultado/sbert_livro_9788500003042.csv", index_col=0)
+
+# Gerar a tabela LaTeX com formatação
+latex_table = recomendacoes.to_latex(
+    index=False, 
+    escape=False, 
+    column_format="|c|l|c|",  # Ensures correct alignment
+    header=["Item Recomendado", "Similaridade Cosseno"]
+)
+
+# Ajustar bordas da tabela
+latex_table = latex_table.replace("\\toprule", "\\hline")
+latex_table = latex_table.replace("\\midrule", "\\hline")
+latex_table = latex_table.replace("\\bottomrule", "\\hline")
+latex_table = latex_table.replace("\\\\\n", " \\\\\n\\hline\n")  # Adiciona linhas horizontais entre as linhas
+
+# Exibir a tabela no formato LaTeX
+print(latex_table)
+
+```
+
+- Apesar do título remeter à temática de romance e/ou história, percebe-se pelo texto descritivo que o livro em questão diz respeito a uma parábola centrada em educação financeira, mentalidade de riqueza e prosperidade. Desta feita, percebe-se que a polissemia do termo "Babilônia" fez com que o modelo baseado em TFIDF recomendasse itens que não possuem similaridade alguma com a real temática do item base, como as obras de ficção/romance "Ontem não te vi em Babilónia", do autor português António Lobo Antunes e "Perdidos na Babilônia", de autoria de Peter Lerangis, sendo este parte de uma série aclamada de livros ficção/aventura.
+- Em constraste, o modelo baseado em embeddings densos demonstrou elevada precisão ao recomendar obras alinhadas ao contexto do item base. Soma-se a isso o fato de que mesmo o item de referênica possuindo um texto descritivo curto e objetivo, sobretudo se comparado às descrições dos demais itens apresentados neste trabalho até então, foi o suficiente para que o modelo percebesse o contexto e realizasse recomendações precisas como "As práticas para a prosperidades extraídas de - O homem mais rico da Babilônia", "Desperte o milionário que há em você" e "Os segredos da mente milionária". A elevada similaridade (valores entre 0,63 e 0,69) reflete a capacidade do SBERT de capturar nuances semânticas mesmo com descrições textuais curtas, interpretando "Babilônia" como símbolo de princípios financeiros atemporais, não como referência geográfica ou literária.
+
+
+c) **Item Base: "O diário de Anne Frank"**
+
+- Autor: Anne Frank
+- Texto descritivo: 12 de junho de 1942 – 1º de agosto de 1944. Ao longo deste período, a jovem Anne Frank escreveu em seu diário toda a tensão que a família Frank sofreu durante a Segunda Guerra Mundial. Ao fim de longos dias de silêncio e medo aterrorizante, eles foram descobertos pelos nazistas e deportados para campos de concentração. Anne inicialmente foi para Auschwitz, e mais tarde para Bergen-Belsen. A força da narrativa de Anne, com impressionantes relatos das atrocidades e horrores cometidos contra os judeus, faz deste livro um precioso documento. Seu diário já foi traduzido para 67 línguas, e é um dos livros mais lidos do mundo. Ele destaca sentimentos, aflições e pequenas alegrias de uma vida incomum, problemas da transformação da menina em mulher, o despertar do amor, a fé inabalável na religião e, principalmente, revela a rara nobreza de um espírito amadurecido no sofrimento. Um retrato da menina por trás do mito.
+
+> **Tfidf Recommender:**
+
+```{python}
+#| output: asis
+#| label: tbl-livro-9788577994717-tfidf
+#| tbl-cap: Recomendações mais similares ao Livro "O diário de Anne Frank" - TFIDF
+#| tbl-pos: H
+#| tbl-width: 5
+
+recomendacoes = pd.read_csv("/Users/pedroh.mello/Desktop/MESTRADO_MCDE/SEMINARIO/PROJETO_CONCLUSAO_MESTRADO/data/tbls_recomends_resultado/tfidf_livro_9788577994717.csv", index_col=0)
+
+# Gerar a tabela LaTeX com formatação
+latex_table = recomendacoes.to_latex(
+    index=False, 
+    escape=False, 
+    column_format="|c|l|c|",  # Ensures correct alignment
+    header=["Item Recomendado", "Similaridade Cosseno"]
+)
+
+# Ajustar bordas da tabela
+latex_table = latex_table.replace("\\toprule", "\\hline")
+latex_table = latex_table.replace("\\midrule", "\\hline")
+latex_table = latex_table.replace("\\bottomrule", "\\hline")
+latex_table = latex_table.replace("\\\\\n", " \\\\\n\\hline\n")  # Adiciona linhas horizontais entre as linhas
+
+# Exibir a tabela no formato LaTeX
+print(latex_table)
+
+```
+{{< pagebreak >}}
+
+> **SBERTrecommender:**
+
+```{python}
+#| output: asis
+#| label: tbl-livro-9788577994717-sbert
+#| tbl-cap: Recomendações mais similares ao Livro "O diário de Anne Frank" - SBERT
+#| tbl-pos: H
+#| tbl-width: 5
+
+recomendacoes = pd.read_csv("/Users/pedroh.mello/Desktop/MESTRADO_MCDE/SEMINARIO/PROJETO_CONCLUSAO_MESTRADO/data/tbls_recomends_resultado/sbert_livro_9788577994717.csv", index_col=0)
+
+# Gerar a tabela LaTeX com formatação
+latex_table = recomendacoes.to_latex(
+    index=False, 
+    escape=False, 
+    column_format="|c|l|c|",  # Ensures correct alignment
+    header=["Item Recomendado", "Similaridade Cosseno"]
+)
+
+# Ajustar bordas da tabela
+latex_table = latex_table.replace("\\toprule", "\\hline")
+latex_table = latex_table.replace("\\midrule", "\\hline")
+latex_table = latex_table.replace("\\bottomrule", "\\hline")
+latex_table = latex_table.replace("\\\\\n", " \\\\\n\\hline\n")  # Adiciona linhas horizontais entre as linhas
+
+# Exibir a tabela no formato LaTeX
+print(latex_table)
+
+```
+
+- Ao analisar as recomendações emitidas pelo modelo TFIDF para o livro "O diário de Anne Frank", não há nenhuma incoerência: O modelo mostra-se capaz de realizar recomendações precisas por apoiar-se na sobreposição de palavras-chave, sobretudo no próprio nome de Anne Frank que aparece diversas vezes ao longo dos textos descritivos das obras recomendadas. Nota-se entretanto uma linearidade nas recomendações que demonstra certa falta de diversidade temática e contextual;
+- O modelo baseado em SBERT, por sua vez, além do alinhamento temático evidente, demonstra inteligência contextual ao recomendar obras como "Diário de Hélène Berr" e "É hora de falar", que expandem o horizonte temático para além da figura central de Anne Frank. Essas obras, embora não mencionem explicitamente o nome "Anne Frank" em seus títulos, compartilham o cerne temático de relatos autobiográficos do Holocausto, evidenciando a capacidade do SBERT de mapear conexões semânticas mais profundas.
+- Por fim, enquanto o TF-IDF apresenta similaridades moderadas (0.30–0.48), refletindo correspondência superficial baseada em repetição lexical, o SBERT alcança valores significativamente mais elevados (0.71–0.77), sinalizando um alinhamento semântico mais robusta. Essa diferença quantitativa traduz-se qualitativamente: o SBERT não apenas identifica a palavra-chave "Anne Frank", mas reconhece o contexto histórico e literário do livro base, capturando subtemas adjacentes. 
+
+
+d) **Item Base: "Harry Potter e a Pedra Filosofal"**
+
+- Autor: J.K. Rowlling
+- Texto descritivo: 'Harry Potter e a Pedra Filosofal' conta a história de um menino que dorme embaixo de uma escada na casa dos tios. Quando ainda bebê, Harry teve sua casa invadida por um terrível bruxo responsável pelo assassinato de seus pais e é o único sobrevivente. Porém, Harry não sabe disso, e acha que é apenas um garoto normal que às vezes parece fazer coisas estranhas acontecerem. Entretanto, no dia de seu aniversário de 11 anos, Harry recebe uma visita inesperada e descobre que é um bruxo, assim como seus pais foram, e que está convidado a ingressar na Escola de Magia e Bruxaria de Hogwarts. Harry, então, vai para Hogwarts, onde irá aprender poções, feitiços e a jogar Quadribol, e se meter em aventurar que irão ensiná-lo sobre a vida.
+
+> **Tfidf Recommender:**
+
+```{python}
+#| output: asis
+#| label: tbl-livro-9788532511010-tfidf
+#| tbl-cap: Recomendações mais similares ao Livro "Harry Potter e a Pedra Filosofal" - TFIDF
+#| tbl-pos: H
+#| tbl-width: 5
+
+recomendacoes = pd.read_csv("/Users/pedroh.mello/Desktop/MESTRADO_MCDE/SEMINARIO/PROJETO_CONCLUSAO_MESTRADO/data/tbls_recomends_resultado/tfidf_livro_9788532511010.csv", index_col=0)
+
+# Gerar a tabela LaTeX com formatação
+latex_table = recomendacoes.to_latex(
+    index=False, 
+    escape=False, 
+    column_format="|c|l|c|",  # Ensures correct alignment
+    header=["Item Recomendado", "Similaridade Cosseno"]
+)
+
+# Ajustar bordas da tabela
+latex_table = latex_table.replace("\\toprule", "\\hline")
+latex_table = latex_table.replace("\\midrule", "\\hline")
+latex_table = latex_table.replace("\\bottomrule", "\\hline")
+latex_table = latex_table.replace("\\\\\n", " \\\\\n\\hline\n")  # Adiciona linhas horizontais entre as linhas
+
+# Exibir a tabela no formato LaTeX
+print(latex_table)
+
+```
+
+
+> **SBERTrecommender:**
+
+```{python}
+#| output: asis
+#| label: tbl-livro-9788532511010-sbert
+#| tbl-cap: Recomendações mais similares ao Livro "Harry Potter e a Pedra Filosofal" - SBERT
+#| tbl-pos: H
+#| tbl-width: 5
+
+recomendacoes = pd.read_csv("/Users/pedroh.mello/Desktop/MESTRADO_MCDE/SEMINARIO/PROJETO_CONCLUSAO_MESTRADO/data/tbls_recomends_resultado/sbert_livro_9788532511010.csv", index_col=0)
+
+# Gerar a tabela LaTeX com formatação
+latex_table = recomendacoes.to_latex(
+    index=False, 
+    escape=False, 
+    column_format="|c|l|c|",  # Ensures correct alignment
+    header=["Item Recomendado", "Similaridade Cosseno"]
+)
+
+# Ajustar bordas da tabela
+latex_table = latex_table.replace("\\toprule", "\\hline")
+latex_table = latex_table.replace("\\midrule", "\\hline")
+latex_table = latex_table.replace("\\bottomrule", "\\hline")
+latex_table = latex_table.replace("\\\\\n", " \\\\\n\\hline\n")  # Adiciona linhas horizontais entre as linhas
+
+# Exibir a tabela no formato LaTeX
+print(latex_table)
+
+```
+
+- Novamente, o TF-IDF demonstra excelente capacidade na recomendação de sequências lógicas. Ao deparar-se com o primeiro livro da série Harry Potter, o modelo sugere como próxima leitura o segundo volume, "Harry Potter e a Câmara Secreta", alinhando-se à expectativa de leitores que buscam continuidade narrativa. Essa abordagem, embora linear e previsível, é eficaz para usuários que priorizam a ordem cronológica das obras.
+- Por outro lado, o SBERT ignora a sequência direta dos livros neste caso, mas compensa essa lacuna com recomendações que exploram o universo expandido da série, como "O livro dos personagens de Harry Potter" e "O universo de Harry Potter de A a Z". Ambos os sistemas, portanto, apresentam recomendações aderentes ao contexto e à temática da obra de referência, demonstrando boa capacidade de associação entre itens com base em suas similaridades, ainda que com enfoques distintos: o TF-IDF na linearidade narrativa e o SBERT na profundidade contextual.
+
+
+e) **Item Base: "A revolução dos bichos"**
+
+- Autor: George Orwell
+- Texto descritivo: 'A revolução dos bichos' é uma fábula sobre o poder. Narra a insurreição dos animais de uma granja contra seus donos. Progressivamente, porém, a revolução degenera numa tirania ainda mais opressiva que a dos humanos. Escrita em plena Segunda Guerra Mundial e publicada em 1945 depois de ter sido rejeitada por várias editoras, essa pequena narrativa causou desconforto ao satirizar ferozmente a ditadura stalinista numa época em que os soviéticos ainda eram aliados do Ocidente na luta contra o eixo nazifascista.
+
+> **Tfidf Recommender:**
+
+```{python}
+#| output: asis
+#| label: tbl-livro-9788570113825-tfidf
+#| tbl-cap: Recomendações mais similares ao Livro "A revolução dos bichos" - TFIDF
+#| tbl-pos: H
+#| tbl-width: 5
+
+recomendacoes = pd.read_csv("/Users/pedroh.mello/Desktop/MESTRADO_MCDE/SEMINARIO/PROJETO_CONCLUSAO_MESTRADO/data/tbls_recomends_resultado/tfidf_livro_9788570113825.csv", index_col=0)
+
+# Gerar a tabela LaTeX com formatação
+latex_table = recomendacoes.to_latex(
+    index=False, 
+    escape=False, 
+    column_format="|c|l|c|",  # Ensures correct alignment
+    header=["Item Recomendado", "Similaridade Cosseno"]
+)
+
+# Ajustar bordas da tabela
+latex_table = latex_table.replace("\\toprule", "\\hline")
+latex_table = latex_table.replace("\\midrule", "\\hline")
+latex_table = latex_table.replace("\\bottomrule", "\\hline")
+latex_table = latex_table.replace("\\\\\n", " \\\\\n\\hline\n")  # Adiciona linhas horizontais entre as linhas
+
+# Exibir a tabela no formato LaTeX
+print(latex_table)
+
+```
+
+
+> **SBERTrecommender:**
+
+```{python}
+#| output: asis
+#| label: tbl-livro-9788570113825-sbert
+#| tbl-cap: Recomendações mais similares ao Livro "A revolução dos bichos" - SBERT
+#| tbl-pos: H
+#| tbl-width: 5
+
+recomendacoes = pd.read_csv("/Users/pedroh.mello/Desktop/MESTRADO_MCDE/SEMINARIO/PROJETO_CONCLUSAO_MESTRADO/data/tbls_recomends_resultado/sbert_livro_9788570113825.csv", index_col=0)
+
+# Gerar a tabela LaTeX com formatação
+latex_table = recomendacoes.to_latex(
+    index=False, 
+    escape=False, 
+    column_format="|c|l|c|",  # Ensures correct alignment
+    header=["Item Recomendado", "Similaridade Cosseno"]
+)
+
+# Ajustar bordas da tabela
+latex_table = latex_table.replace("\\toprule", "\\hline")
+latex_table = latex_table.replace("\\midrule", "\\hline")
+latex_table = latex_table.replace("\\bottomrule", "\\hline")
+latex_table = latex_table.replace("\\\\\n", " \\\\\n\\hline\n")  # Adiciona linhas horizontais entre as linhas
+
+# Exibir a tabela no formato LaTeX
+print(latex_table)
+
+```
+
+- Trata-se neste caso de um cenário intencional de ambiguidade lexical, trazido à discussão para testar a capacidade dos modelos em lidar com polissemia e contexto implícito. A obra "A Revolução dos Bichos", apesar do título, é uma sátira política que utiliza animais como alegoria para criticar o regime stalinista na União Soviética. O desafio aqui reside em distinguir a camada superficial (termos como "bichos" e "revolução") da camada semântica profunda (crítica ao totalitarismo).
+- Com baixos valores de similaridade apontados, o sistema TF-IDF focou mais uma vez na sobreposição lexical ao recomendar obras que contém as palavras "revolução" e/ou "bichos" em seus textos descritivos. Isto gerou tanto recomendações adequadas como "História Concisa da Revolução Russa" e "A Fazenda dos Animais - Edição Espcial"(outra sátira de George Orwell) como recomendações irrelevantes para a temática pretendida, como "A quarta revolução industrial" e o livro infantil "Almanaque Maluquinho - Bocão e os Bichos", expondo portanto a limitação do modelo em ir além da literalidade dos termos.
+- O mesmo não ocorre ao modelo SBERT. Além de não debruçar-se sobre nenhuma das palavras-chave supramencionadas, o modelo demonstrou elevada capacidade de generalização para domínios relacionados ao indicar ao usuário, por exemplo, "A maldição de Stalin" (similaridade 0.705) e "Tornando-se Hitler" (similaridade 0.704), livros que exploram a história de figuras ditatoriais no contexto da Segunda Guerra Mundial, demonstrando ainda por meio das demais recomendações a perceção da intenção satírica e política da obra de referência.
+
+
+
+f) **Item Base: "Homo Deus"**
+
+- Autor: Yuval Noah Harari
+- Texto descritivo: O futuro visto por um dos grandes pensadores da atualidade: isto é Homo Deus. Neste Homo Deus: uma breve história do amanhã, Yuval Noah Harari, autor do estrondoso best-seller Sapiens: uma breve história da humanidade, volta a combinar ciência, história e filosofia, desta vez para entender quem somos e descobrir para onde vamos. Sempre com um olhar no passado e nas nossas origens, Harari investiga o futuro da humanidade em busca de uma resposta tão difícil quanto essencial: depois de séculos de guerras, fome e pobreza, qual será nosso destino na Terra? A partir de uma visão absolutamente original de nossa história, ele combina pesquisas de ponta e os mais recentes avanços científicos à sua conhecida capacidade de observar o passado de uma maneira inteiramente nova. Assim, descobrir os próximos passos da evolução humana será também redescobrir quem fomos e quais caminhos tomamos para chegar até aqui.
+{{< pagebreak >}}
+> **Tfidf Recommender:**
+
+```{python}
+#| output: asis
+#| label: tbl-livro-9788543807829-tfidf
+#| tbl-cap: Recomendações mais similares ao Livro "Homo Deus" - TFIDF
+#| tbl-pos: H
+#| tbl-width: 5
+
+recomendacoes = pd.read_csv("/Users/pedroh.mello/Desktop/MESTRADO_MCDE/SEMINARIO/PROJETO_CONCLUSAO_MESTRADO/data/tbls_recomends_resultado/tfidf_livro_9788543807829.csv", index_col=0)
+
+# Gerar a tabela LaTeX com formatação
+latex_table = recomendacoes.to_latex(
+    index=False, 
+    escape=False, 
+    column_format="|c|l|c|",  # Ensures correct alignment
+    header=["Item Recomendado", "Similaridade Cosseno"]
+)
+
+# Ajustar bordas da tabela
+latex_table = latex_table.replace("\\toprule", "\\hline")
+latex_table = latex_table.replace("\\midrule", "\\hline")
+latex_table = latex_table.replace("\\bottomrule", "\\hline")
+latex_table = latex_table.replace("\\\\\n", " \\\\\n\\hline\n")  # Adiciona linhas horizontais entre as linhas
+
+# Exibir a tabela no formato LaTeX
+print(latex_table)
+
+```
+
+
+> **SBERTrecommender:**
+
+```{python}
+#| output: asis
+#| label: tbl-livro-9788543807829-sbert
+#| tbl-cap: Recomendações mais similares ao Livro "Homo Deus" - SBERT
+#| tbl-pos: H
+#| tbl-width: 5
+
+recomendacoes = pd.read_csv("/Users/pedroh.mello/Desktop/MESTRADO_MCDE/SEMINARIO/PROJETO_CONCLUSAO_MESTRADO/data/tbls_recomends_resultado/sbert_livro_9788543807829.csv", index_col=0)
+
+# Gerar a tabela LaTeX com formatação
+latex_table = recomendacoes.to_latex(
+    index=False, 
+    escape=False, 
+    column_format="|c|l|c|",  # Ensures correct alignment
+    header=["Item Recomendado", "Similaridade Cosseno"]
+)
+
+# Ajustar bordas da tabela
+latex_table = latex_table.replace("\\toprule", "\\hline")
+latex_table = latex_table.replace("\\midrule", "\\hline")
+latex_table = latex_table.replace("\\bottomrule", "\\hline")
+latex_table = latex_table.replace("\\\\\n", " \\\\\n\\hline\n")  # Adiciona linhas horizontais entre as linhas
+
+# Exibir a tabela no formato LaTeX
+print(latex_table)
+
+```
+
+- Ainda que se prenda mais uma vez à sobreposição de palavras-chave, o modelo TFIDF apresentou em suas três primeiras recomendações livros relevantes e ajustadas à temática do item base, ressaltando-se que o livro "21 lições para o século 21" fora escrito pelo mesmo autor de "Homo Deus" e aborda questões filosóficas semelhantes. 
+- Entretanto, o TFIDF demonstrou limitações ao recomendar livros como "Na batalha contra o coronavírus, faltam líderes à humanidade" e "Notas sobre a pandemia", que possuem pouca correlação com a obra de referência.
+- Ratificando a tendência apresentada até agora, o SBERT mais uma vez superou o TFIDF em termos qualitativos. Destaca-se o peso contextual da temática de futuro da humanidade que fora captado pelo sistema de recomendação e considerado no ato de emissão de recomendações como "Para Onde Foi o Futuro?", "Evolução" e "História do Futuro".
+{{< pagebreak >}}
+- É oportuno mencionar ainda o elevado valor de similaridade enocntrado pelo SBERT, a variar no intervalo entre 0.68 e 0.73, diferente do TFIDF que encontrou correlações com valores abaixo de 0.3.
+
+
+## Outras métricas de similaridade: A aplicação da Distância de Manhattan e Distância Euclidiana aos sistemas de recomendação em tela
+
+No âmbito deste estudo, procederam-se ensaios adicionais com duas medidas de dissimilaridade clássicas - Distância Euclidiana (L2) e Distância de Manhattan (L1) - aplicadas aos vetores representativos dos textos descritivos dos itens nos dois sistemas de recomendação. O objetivo consistiu em verificar se estas métricas, convertidas em similaridades, produziam recomendações coerentes quando comparadas com a Similaridade do Cosseno.
+
+Ambos os sistemas (TF-IDF com TfidfVectorizer do scikit-learn e embeddings densos do modelo paraphrase-multilingual-MiniLM-L12-v2) utilizam, por defeito ou por pré-processamento, vetores normalizados à norma L2, conforme documentações oficiais presentes em [scikit-learn.org](https://scikit-learn.org/stable/modules/feature_extraction.html#tfidf-term-weighting) e [sbert.net](https://www.sbert.net/docs/sentence_transformer/pretrained_models.html). Nesse contexto, a distância Euclidiana entre dois vetores normalizados satisfaz
+
+$$
+\|\mathbf{u} - \mathbf{v}\|_2^2 \;=\; 2\,\bigl(1 - \cos(\mathbf{u},\,\mathbf{v})\bigr)
+$$
+
+
+o que implica equivalência monotónica com a Similaridade do Cosseno. Na prática, as recomendações obtidas com ambas as métricas coincidiram, confirmando-se que, num espaço de vetores unitários, minimizar a distância Euclidiana mostrou-se equivalente à maximização do cosseno. **Todavia, a explicabilidade revelou-se mais intuitiva no caso da Similaridade do Cosseno, pois se associa diretamente a valores entre 0 e 1 (quanto maior, maior similaridade), ao passo que a interpretação de “distâncias mais pequenas indicam maior semelhança” tende a causar alguma confusão ou ser contraintuitiva para pessoas que possuem pouca ou nenhuma familiaridade com este tipo de conceitos.**
+
+De outro giro, no que tange à aplicação da distância de Manhattan, a aplicação de L1 sobre vetores TF-IDF normalizados encontrou-se com elevada esparsidade: diferenças pontuais em poucas componentes geraram distâncias L1 desproporcionadas, deteriorando a ordenação de vizinhanças e resultando em recomendações de qualidade baixa e insuficiente. O mesmo fenómeno repetiu-se nos embeddings densos — os quais também são normalizados por padrão pelo modelo paraphrase-multilingual-MiniLM-L12-v2: Ainda que se aplique a norma L2=1, a soma das diferenças absolutas penalizou indevidamente pequenas variações na direção dos vetores, produzindo vizinhanças sem correlação semântica. Desta feita, em ambos os cenários a utilização da métrica de Manhattan se mostrou inadequada para aplicação ao caso em tela.
+
+Ante todo o exposto, as experiências demonstraram que, quando os vetores estão normalizados, a Distância Euclidiana replica a ordem do Cosseno sem perda de informação, mas demonstra perdas no que diz respeito à clareza interpretativa. A Distância de Manhattan, por sua vez, falha em captar de forma consistente a semelhança semântica quer em espaços esparsos (TF-IDF) quer em espaços densos (SBERT), pelo que a Similaridade do Cosseno se mantém como a métrica de referência para sistemas de recomendação textual, de modo a ratificar a sua escolha para o desenvolvimento deste estudo.
+
+
+## Considerações finais sobre os resultados
+
+Ante todo o exposto nesta secção, resta claro que ambos os sistemas desenvolvidos possuem a capacidade de emitir recomendações assertivas e auxiliar organizações no atingimento dos seus objetivos, sem a necessidade de infraestrutura complexa e onerosa para recolha e processamento de grandes quantidades de dados.
+
+Entretanto, resta claro outrossim que há uma larga vantagem na adoção do sistema baseado em vetores de embeddings densos(SBERT based). Se de um lado o sistema TF-IDF demonstrou boa capacidade para lidar com coincidências literais entre termos, o que o leva a ser uma boa opção para a recomendaçãao de itens sequenciais e/ou com títulos muito similares, de outro giro demonstrou dificuldades em perceber o contexto que permeia os livros e cursos que lhe foram apresentados, falhando portanto em emitir recomendações mais diversas e baseadas na temática ao deparar-se com domínios muito restritos.
+
+O SBERT por sua vez demonstrou elevada capacidade de captar relações contextuais profundas, ainda que os textos dos itens partilhassem poucas palavras-chave entre si. Neste sistema, termos como "riqueza", "investimento" e "sucesso" são mapeadas para regiões próximas no espaço vetorial denso de 384 dimensões criado pelo modelo paraphrase-multilingual-MiniLM-L12-v2, de modo que sejam associadas quando da emissão das recomendações.
+
+Ademais, há mais uma vantagem em adoptar-se o SBERT: Os embeddings densos fazem com que os valores de similaridade do cosseno sejam muito superiores e fidedignos se comparadas àqueles auferidos pelo TF-IDF, o que facilita sobremaneira o controle de qualidade das recomendações após a implantação do modelo, vez que o responsável por esta etapa pode definir um treshold mínimo de similaridade mais elevado para que determinada recomendação seja entregue ao usuário final. 
+
+A discrepância observada nos valores de similaridde do cosseno apresentados por ambos os sistemas para os mesmos itens pode ser explicada pela diferença entre as estruturas dos vetores de representação textual gerados. Conforme demonstrado na @tbl-esparse-tfidf, cada vetor criado pelo TF-IDF possui elevado número de dimensões(sendo uma dimensão correspondente a cada termo único identificado no vocabulário), as quais possuem valor 0 em sua maioria, o que culmina na criação de uma matriz esparsa ao "empilhar" cada um desses vetores. Assim sendo, se por exemplo 2 itens compartilham apenas 10 palavras dentre as 100.000 existentes naquelel corpus, há uma tendência de baixa similaridade identificada, pois os vetores neste caso serão quase ortogonais. Já no caso dos vetores de embeddings gerados pelo modelo baseado em *deep learning*, o número de dimensões é fixo (384 para o caso do modelo em uso *paraphrase-multilingual-MiniLM-L12-v2*) e todas elas possuem valores não nulos, o que permite a maximização da similaridade entre textos semanticamente relacionados e possibilita que múltiplas características semânticas contribuam para a identificação de similaridades. Isto está intimamente ligado ao processo de treinamento do modelo SBERT, onde os vetores são ajustados para que pares relevantes apresentem similaridade do cosseno elevada, mnesmo em sentenças com termos diferentes.  
+
+O principal obstáculo ao sistema de recomendação SBERT reside na limitação do seu contexto aos dados utilizados na etapa de treinamento do modelo, entretanto não se mostrou como um empecilho para aplicação aos itens elencados neste trabalho. Uma forma de superar possíveis limitações neste sentido seria adicionar os dados do domínio pretendido em uma etapa de tunning do modelo, ressaltando-se que isto pode ser oneroso em termos computacionais e de infraestrutura.
+
+
+# USE CASE: Aplicação do Recommender SBERT aos dados da Política Nacional de Desenvolvimento de Pessoas
+
+Instituída no âmbito do ordenamento jurídico brasileiro pelo Decreto nº 9.991, de 28 de agosto de 2019, a Política Nacional de Desenvolvimento de Pessoas(PNDP) tem por objetivo promover e fomentar o desenvolvimento dos servidores do poder público brasileiro no que diz respeito às competências necessárias para o alcance da excelência na atuação dos Oórgãos e Entidades da Administração Pública Federal, Direta, Autárquica e Fundacional.
+
+Conforme a página oficial do governo brasileiro, o objetivo da PNDP é estabelecer a cultura de planejamento de ações de desenvolvimento entre as instituições federais, com base no alinhamento das necessidades de cada órgão e entidade, tendo como meta o aprimoramento da gestão pública, considerando as boas práticas do mercado de trabalho.
+
+## Materialização da Política 
+
+Entre os instrumentos para a efetivação da PNDP está o Plano de Desenvolvimento de Pessoas (PDP) que permite planejar e orientar a execução da Política. O Plano é elaborado anualmente por todos os órgãos e entidades da administração pública federal, **a partir do levantamento das necessidades de desenvolvimento dos servidores para o alcance dos resultados organizacionais,** sendo a necessidade uma lacuna entre o desempenho esperado e o desempenho atual.
+
+Todo o processo de levantamento de necessidades e elaboração do PDP é realizado pelo órgão/entidade no Portal Sipec, consolidado e encaminhado via sistema, para análise do órgão central do Sipec.
+
+Devem constar no PDP a descrição das necessidades de desenvolvimento que serão contempladas no exercício financeiro, com a respectiva carga horária estimada; o público-alvo de cada ação de desenvolvimento; e os custos estimados das ações de desenvolvimento.
+
+O PDP tem que alinhar as necessidades de desenvolvimento com a estratégia do órgão/entidade e estabelecer objetivos e metas institucionais como referência para o planejamento das ações de desenvolvimento. Além disso, o PDP deve atender às necessidades operacionais, táticas e estratégicas, vigentes e futuras, além de nortear o planejamento das ações de desenvolvimento de acordo com os princípios da economicidade e da eficiência.
+
+## Participação da Fundação Escola Nacional de Administração Pública (Enap)
+
+Após o envio dos PDPs pelos órgãos e entidades, **os Planos são consolidados e encaminhados para a Fundação Escola Nacional de Administração Pública (Enap). A Enap, por sua vez, apresenta recomendações de soluções de desenvolvimento/capacitação para as necessidades identificadas. Essas soluções são encaminhadas às instituições,** via Portal Sipec, junto com a Manifestação Técnica emitida pelo órgão central do Sipec. De posse da Manifestação, órgãos e entidades poderão iniciar a execução dos seus Planos, a partir dos planejamentos realizados e das ações indicadas na Manifestação Técnica.
+
+A primeira rodada de recomendações emitidas pela ENAP remonta ao ano de 2020, após o recebimento da consolidação de cerca de 20.000 demandas de capacitação, a Escola ficou responsável por avaliá-las manualmente e sugerir cursos de seu catálogo ou de outras escolas de governo que correspondiam àquelas necessidades.
+
+::: {#fig-input-pndp}
+  ![](imgs/INPUT_NECESS.png){width=90%}
+
+  **Exemplo de entradas da planilha consolidada de necessidasdes da PNDP que chega à ENAP para emissão de recomendações**
+:::
+
+Dado o elevado volume e a diversidade das demandas, esse trabalho exigia esforço considerável das equipes envolvidas, sendo naturalmente mais suscetível a variações e inconsistências decorrentes da complexidade do processo.  
+
+Por conseguinte, no ano de 2021 a equipe da Coordenação-Geral de Ciência de Dados da ENAP, da qual faço parte, iniciou o desenvolvimento de soluções com vistas a automatizar o processo de emissão destas recomendações com o objetivo de reduzir o esforço humano empreendido na tarefa. O Primeiro algoritmo utilizado baseava-se em TF-IDF, com funcionamento similar ao proposto na [Secção TF-IDFRecommender](#construção-das-engines-de-recomendação-desenvolvimento-das-classes-tfidfrecommender-e-sbertrecommender).
+
+Durante os próximos anos, foram aplicadas melhorias no pré-processamento dos dados inputados à engine como a pré-categorização das necessidades por áreas temáticas e a identificação de palavras-chave, além de testes com outras técnicas e métricas de similaridade entre sentenças como LDA, Distância de Jaccard e Word2Vec, tudo isto com o objectivo de fazer a ponte entre os textos descritivos dos cursos existentes na base de dados e os textos descritivos das necessidades dos servidores públicos. 
+
+Todos estas melhorias foram importantes para o aperfeiçoamento das recomendações exaradas, mas ainda havia um obstáculo: A qualidade das recomendações geradas dependia sobremaneira de correspondências exatas entre palavras-chave e as matrizes vetoriais esparsas geradas pelas técnicas de vetorização textual empregadas demonstravam-se como um problema para a assertividade das recomendações.
+
+## Aplicação do algoritmo de recomendação SBERT-Based proposto neste projecto ao caso concreto da PNDP
+Desta feita, fui responsável pela proposição e implementação de uma nova solução no ano de 2024, a qual apoiou-se completamente no algoritmo SBERT demonstrado neste projecto, com fulcro em aprimorar a qualidade das correspondências entre demandas e ofertas de capacitação por meio do uso de arquitetura de transformers para a geração de embeddings densos que possibilitassem a captação de contexto e o controle de qualidade das recomendações por meio do estabelecimento de tresholds mínimos de similaridade do cosseno entre os vetores.
+
+Nesta etapa fora aplicado o modelo sentence-transformers/ paraphrase-multilingual-MiniLM-L12-v2 aos dados tratados e transformados, reduzindo o espaço vetorial gerado à ordem de 384 dimensões e alcançando uma alta precisão nas recomendações, haja vista que a partir deste momento o contexto semântico passa a ser percebido e considerado pela engine quando da emissão das recomendações.
+
+
+::: {#fig-mvp-pndp}
+  ![](imgs/pndp_streamlit.png){width=110%}
+
+  **Exemplo de Mínimo Produto Viável utilizado na aplicação do sistema SBERT à recomendação de cursos para necessidades elencadas na PNDP**
+:::
+
+ 
+A solução fora apresentada aos demandantes por meio do *MVP* consignado na @fig-mvp-pndp, onde o gestor do sistema realiza apenas o upload da planilha de necessidades de capacitação conforme exemplo em @fig-input-pndp e determina o treshold mínimo de similaridade do cosseno que deve ser utilizado pelo modelo como linha de base para emissão ou não de recomendações. Este sistema demonstrou-se capaz de emitir recomendações para uma planilha com mais de 10.000 necessidades em pouco menos de 5 minutos.
+
+::: {#fig-recomends-pndp}
+  ![](imgs/RECOMENDS_PNDP.png){width=100%}
+
+  **Exemplo de output emitido pelo algoritmo SBERT para a planilha de necessidades da PNDP**
+:::
+
+Conforme demonstrado na @fig-recomends-pndp, a engine de recomendação analisa o texto de cada necessidade de capacitação, compara-o com os dados textuais da matriz de cursos disponíveis e recomenda os 3 cursos mais similares à necessidade, de acordo com o limite mínimo de similaridade do cosseno indicado pelo operador, que no exemplo em tela fora definido em 0,55. Nota-se ainda que caso não sejam encontrados cursos condizentes com a similaridade mínima definida, a engine não realiza nenhuma recomendação, vez que poderia incorrer em falhas ao recomendar cursos com pouca ou nenhuma relevância para a necessidade elencada.
+
+Se antes era necessário que uma equipe inteira fosse mobilizada durante dezenas de dias para analisar cada solicitação de capacitação, compará-la visualmente à matriz de cursos disponíveis e montar a base de recomendações em um novo documento, após o advento desta solução é necessário apenas que uma pessoa revise a planilha de recomendações emitida pelo sistema baseado em SBERT, o que demonstra a enorme utilidade e versatilidade do algoritmo desenvolvido, bem como a sua capacidade de gerar economia e eficiência no âmbito organizacional.
 
 # Conclusão e Investigação Futura
-DIZER SOBRE USO DE VECTOR DATABASES PARA ARMAZENAR EMBEDDINGS E GANHAR TEMPO; INSERÇAO DE TRESHOLD MINIMO DE SIMILARIDADE DO COSSENO 
+Nesta secção serão elencadas as conclusões obtidas após o término do projecto, bem como os pontos que podem ser trabalhados em investigação futura neste campo de estudo.
+
+## Conclusões
+
+A primeira conclusão que pode ser obtida com base nas análises e resultados deste trabalho diz respeito à importância dos dados não estruturados. Em um contexto onde este tipo de informação é cada vez mais abundante, boa parte das organizações ainda focam suas atenções no tratamento e análise apenas de dados estruturados para extração de insights e geração de inteligência negocial.
+
+Por conseguinte, o presente projeto demonstrou que ao aplicar-se as ferramentas e conhecimentos corretos à extração e transformação de dados não estruturados, estes podem apresentar importantes resultados para a área negocial sem que haja a necessidade de investimentos substanciais em capacidade computacional para processamento e armazenamento de grandes volumes de dados.
+
+Ademais, demonstrou-se outrossim a grande evolução no campo do Processamento de Linguagem Natural ao longo do tempo, sobretudo nos últimos 20 anos, fazendo com que este sub-domínio da Inteligência Artificial receba cada vez mais atenção no âmbito empresarial e da ciência de dados enquanto área do conhecimento. Para tanto, o projecto buscou ao máximo empregar e demonstrar desde técnicas mais rudimentares a técnicas contemporâneas e tidas como avaçadas na seara do PLN e da Inteligência Artificial.
+
+Quanto aos sistemas de recomendação desenvolvidos neste estudo, resta claro que os objectivos traçados na [Secção 2](#objetivos) foram alcançados com sucesso. Em primeira medida destacam-se os dois sistemas de recomendação desenvolvidos e testados: Um baseado em vetorização textual por meio de TF-IDF e o outro baseado em vetores de embeddings densos e arquitetura de transformers. 
+
+Neste ponto foram elencados os pontos fortes e fracos de cada abordagem, bem como oportunidades de melhoria e possíveis aplicações em âmbito organizacional, destacando-se ainda a simplicidade na implementação de cada um deles e a necessidade de poucos dados sobre os itens para um funcionamento satisfatório, sem que fosse necessário realizar grandes investimentos em infraestrutura para coleta, tratamento e armazenamento de maiores volumes de dados. 
+
+O destaque dentre os modelos de recomendação desenvolvidos vai para o algoritmo SBERT. Além de demonstrar-se mais preciso que o seu predecessor, este modelo provou ainda sua versatilidade e eficiência ao considerar o contexto semântico, algo tão preponderante na língua portuguesa. Com isto, ao não deixar-se levar apenas por coincidências lexicais entre palavras-chave, este modelo mostrou-se relevante e confiável, além de possibilitar ao seu operador o controlo de qualidade das recomendações por meio da análise dos valores de similaridade entre as sentenças, conforme caso de aplicação do modelo exposto na [Secção 4](#use-case-aplicação-do-recommender-sbert-aos-dados-da-política-nacional-de-desenvolvimento-de-pessoas).
+
+Dentre as limitações encontradas ao longo do estudo, destacam-se a dificuldade em encontrar uma base consolidada com dados a respeito de livros em Língua Portuguesa (europeia ou brasileira), o que fora contornado por meio da exploração de datasets com ISBNs e sua vinculação à API do google books, e a dificuldade na aplicação de métodos objectivos de mensuração da qualidade das recomendações emitidas pelos sistemas desenvolvidos, haja vista tratar-se de abordagem não supervisionada onde não existem rótulos para mensuração de precisão, *recall* ou *f1-score*.
+
+Por fim, a despeito dos resultados positivos e satisfatórios obtidos ao longo da construção deste projecto, o principal objectivo fora alcançado: Houve um avanço significativo do aluno no que diz respeito à aquisição de conhecimento sobre técnicas de análise de dados não estruturados, bem como no que tange ao funcionamento e aplicação das técnicas de PLN ao caso concreto e utilização dos métodos da ciência de dados na resolução de problemas organizacionais reais.
+
+## Investigação Futura
+
+Como oportunidade de investigação em trabalhos futuros, destacam-se a implementação de um banco de dados vectorial para armazenamento dos embeddings gerados pelo modelo SBERT com fito de aumentar a eficiência na emissão das recomendações, a possível utilização de outros modelos da biblioteca *Sentence Transformers* para além do *paraphrase-multilingual-MiniLM-L12-v2*, de modo a aumentar o número de dimensões do espaço vectorial gerado e captar ainda mais nuances contextuais e explorar métodos híbridos que combinem as vantagens do TF-IDF(como a recomendação de itens sequenciais) às vantagens do SBERT(captura de contexto semântico aprofundado) para aproximar-se ainda mais da máxima excelência na produção das recomendações baseadas em texto.
 
 # Bibliografia
 

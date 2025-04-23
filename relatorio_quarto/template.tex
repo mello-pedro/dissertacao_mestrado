@@ -12,10 +12,14 @@
 \usepackage{indentfirst}
 \usepackage{etoolbox}
 \usepackage{pdfpages}
+\usepackage{enumitem}
 %\usepackage[style=apa]{biblatex}
 %\addbibresource{referencias.bib}
 
-
+% Custom bullet styles for nested lists
+\setlist[itemize,1]{label=$\bullet$}   % Level 1: •
+\setlist[itemize,2]{label=$\circ$}     % Level 2: ◦
+\setlist[itemize,3]{label=$\diamond$} % Level 3: ▶
 
 % Adicionar quebra de página antes de cada seção
 \AddToHook{cmd/section/before}{\clearpage}
@@ -54,7 +58,7 @@
   position=current page.center,
   vshift=0pt,
   hshift=0pt,
-  contents={\includegraphics[width=1.0\paperwidth, height=1.0\paperheight]{modelostex/CAPA_PROVISORIA.pdf}}
+  contents={\includegraphics[width=0.8\paperwidth, height=1.0\paperheight]{modelostex/CAPA_PROVISORIA.pdf}}
 }
 
 
