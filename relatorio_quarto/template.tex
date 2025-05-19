@@ -13,8 +13,12 @@
 \usepackage{etoolbox}
 \usepackage{pdfpages}
 \usepackage{enumitem}
+
+
 %\usepackage[style=apa]{biblatex}
 %\addbibresource{referencias.bib}
+\pagenumbering{roman}
+
 
 % Custom bullet styles for nested lists
 \setlist[itemize,1]{label=$\bullet$}   % Level 1: •
@@ -96,7 +100,7 @@
 \renewcommand{\cfttoctitlefont}{\color{tocTitleColor}\Huge\bfseries}
 
 % Ajustar a distância entre o título do Toc e 1å seção
-\setlength{\cftaftertoctitleskip}{50pt}
+\setlength{\cftaftertoctitleskip}{20pt}
 
 % retirar as bolinhas entre o texto e o número da página no toc
 %\renewcommand{\cftdot}{}
@@ -113,9 +117,9 @@
 \newcommand{\cftsubparagraphnumwidth}{5em} % Para sub-paragrafo
 
 % Ajustar o espaçamento entre os itens do TOC
-\setlength{\cftbeforesecskip}{20pt} % Espaçamento antes das seções
-\setlength{\cftbeforesubsecskip}{5pt} % Espaçamento antes das subseções
-\setlength{\cftbeforesubsubsecskip}{5pt} % Espaçamento antes das subsubseções
+\setlength{\cftbeforesecskip}{10pt} % Espaçamento antes das seções
+\setlength{\cftbeforesubsecskip}{2pt} % Espaçamento antes das subseções
+\setlength{\cftbeforesubsubsecskip}{2pt} % Espaçamento antes das subsubseções
 
 % Definição de comandos para seções adicionais no TOC (subsub, paragrafo e subparagrafo caso existam)
 \newcommand{\cftparagraphpagefont}{\color{corSubsDois}\normalsize\bfseries}
@@ -137,6 +141,7 @@
 \renewcommand{\cftsubsubsecfont}{\color{corSubsDois}\normalsize}  % Estilo do H3
 \renewcommand{\cftparagraphfont}{\color{corSubsDois}\normalsize} % Estilo do H4
 \renewcommand{\cftsubparagraphfont}{\color{corSubsDois}\normalsize} % Estilo do H5
+
 
 % Define formatacao personalizada para seções - aqui ja é do documento qmd e nao do TOC especificamente
 \titleformat{\section}
@@ -196,7 +201,9 @@
 
 % remover a linha horizontal no cabeçalho do fancy que estava confligando comimagem de fundo
 \renewcommand{\headrulewidth}{0pt}
-\setArabicPageNumbering
+%\setArabicPageNumbering
+
+
 
 \hypersetup{
   colorlinks=true,
