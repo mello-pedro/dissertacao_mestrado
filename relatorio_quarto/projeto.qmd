@@ -156,24 +156,24 @@ Desta feita, **este estudo concentra-se na hipótese de recomendação de sequê
 
 ### Tipos de Sistemas de Recomendação
 Quando estamos a falar em sistemas de recomendação, existem três tipos de técnicas que podem ser utilizadas em sua concepção[@ricci2011handbook; @Burke_2002], as quais destacam-se a seguir:
-{{< pagebreak >}}
 
 a) *Content-based*:
 
-![Exemplo de Sistema de Recomendação Baseado em Conteúdo.](imgs/content_based_sr.png){#fig-content width=60% fig-cap="Exemplo de Sistema de Recomendação Baseado em Conteúdo."}
+Baseia-se na recomendação dos itens mais similares àqueles adquiridos e/ou pesquisados pelo usuário anteriormente. Neste tipo de SR o que importa é a similaridade entre as características dos itens, de modo a utilizar unicamente o último e/ou histórico dos últimos itens consumidos pelo utilizador para recomendar itens semelhantes, sem considerar contudo as variáveis relativas ao próprio utilizador. 
 
+![Exemplo de Sistema de Recomendação Baseado em Conteúdo.](imgs/content_based_sr.png){#fig-content width=50% fig-cap="Exemplo de Sistema de Recomendação Baseado em Conteúdo."}
 
-Baseia-se na recomendação dos itens mais similares àqueles adquiridos e/ou pesquisados pelo usuário anteriormente. Neste tipo de SR o que importa é a similaridade entre as características dos itens, de modo a utilizar unicamente o último e/ou histórico dos últimos itens consumidos pelo utilizador para recomendar itens semelhantes, sem considerar contudo as variáveis relativas ao próprio utilizador . 
 
 Conforme demonstra a @fig-content, imagine que o usuário João leu o livro "Os Segredos da Mente Milionária". Com base nessa interação, o sistema analisaria as características do livro, como gênero (desenvolvimento pessoal), temas abordados (educação financeira e mentalidade de riqueza) e descrição textual da obra e recomendaria livros como "Pai Rico, Pai Pobre" de Robert Kiyosaki ou "A Mente Acima do Dinheiro" de Ted Klontz, que compartilham características similares e tendem a atrair o mesmo público-alvo.
 
 Como principais vantagens deste tipo de sistema é possível citar a sua simplicidade e menor necessidade de dados, haja vista não ser necessário coletar grandes massas de dados acerca do comportamento dos usuários, bem como sua escalabilidade e potencial de atuação em domínios onde os itens possuem descrições bem definidas e acessíveis.
 
 De outro giro, sua principal desvantagem diz respeito à limitação da descoberta de novas preferências pelos utilizadores, uma vez que ao receber apenas recomendações de itens similares dificilmente ocorreria uma exposição a itens diversos poderiam expandir seus interesses. Além disso, há uma elevada dependência da qualidade e granularidade das caracteríticas que descrevem os itens para que se tenham boas recomendações.
+{{< pagebreak >}}
 
 b) *Collaborative-filtering*:
 
-![Exemplo de Sistema de Recomendação Baseado em Filtragem Colaborativa.](imgs/collaborative_filtering_sr.png){#fig-colab width=60% fig-cap="Exemplo de Sistema de Recomendação Baseado em Filtragem Colaborativa."}
+![Exemplo de Sistema de Recomendação Baseado em Filtragem Colaborativa.](imgs/collaborative_filtering_sr.png){#fig-colab width=50% fig-cap="Exemplo de Sistema de Recomendação Baseado em Filtragem Colaborativa."}
 
 
 Se na técnica baseada em conteúdo os dados relativos ao usuário não eram considerados, há aqui uma completa inversão desta lógica: A filtragem colaborativa utiliza os dados recolhidos de todos os utilizadores para recomendar a um determinado usuário conteúdos que pessoas com o perfil semelhante ao dele consumiram anteriormente. @Schafer_2001 refere-se à filtragem colaborativa como "people-to-people correlation", uma vez que a similaridade entre os gostos de dois usuários é calculada com base no quão similares são as avaliações atribuídas a itens compartilhados.
@@ -192,7 +192,7 @@ Conforme ressaltado anteriormente, sistemas de recomendação baseados em filtra
 
 Tratar de maneira eficiente do problema do *cold start*, conforme abordado no parágrafo anterior, consiste em uma das principais vantagens deste sistema. Além disso, este tipo de SR é o que tende a apresentar as recomendações mais personalizadas ao gosto do usuário, pois utiliza-se tanto de dados e padrões extraídos das interações coletivas, quanto dos dados que caracterizam cada item.
 
-Ocorre que, apesar de seu funcionamento aparentemente perfeito, este sistema traz consigo uma importante desvantagem que pode tornar-se ainda mais desafiadora à medida em que as organizações que visam aplicá-lo possuem recursos limitados: Sistemas de Recomendação Híbridos possuem grande dificuldade de implementação e manutenção, haja vista a multiplicidade de técnicas aplicadas e a grande quantidade de dados que devem ser processados. Assim, torna-se custoso computacionalmente colocá-los em produção, sobretudo no contexto de empresas menores e com maiores limitações de budget.
+Ocorre que, apesar de seu funcionamento aparentemente perfeito, este sistema traz consigo uma importante desvantagem que pode tornar-se ainda mais desafiadora à medida em que as organizações que visam aplicá-lo possuem recursos limitados: Sistemas de Recomendação Híbridos possuem grande dificuldade de implementação e manutenção, haja vista a multiplicidade de técnicas aplicadas e a grande quantidade de dados que devem ser processados. Assim, torna-se custoso computacionalmente colocá-los em produção, sobretudo no contexto de empresas menores e com maiores limitações de *budget*.
 
 
 ## Processamento de linguagem natural 
@@ -204,9 +204,9 @@ O algoritmo proposto pelos autores utiliza-se de uma abordagem semântica *bag-o
 O estudo destaca em seu cerne o potencial das técnicas de PNL para melhorar os sistemas de recomendação de notícias eletrónicas, fornecendo aos usuários resultados de pesquisa mais completos e precisos.
 
 Apesar de ainda serem importantes e relevantes até os dias de hoje, técnicas como o TF-IDF não captam contexto quando da vetorização textual e tem dado lugar a abordagens mais modernas, baseadas sobretudo em redes neurais e arquitetura de transformers para captação avançada de contexto por meio de mecanismos de atenção.
-{{< pagebreak >}}
 
 Esta subsecção abordará as nuances do Processamento de Linguagem Natural de modo a demonstrar a relevância deste ramo da Inteligência Artificial no desenvolvimento dos sistemas de recomendação não supervisionados baseados em conteúdo ora propostos, preparando o leitor para compreender a metodologia utilizada, a qual será apresentada na próxima secção.
+{{< pagebreak >}}
 
 ### Problemas passíveis de serem solucionados com uso do PLN
 A primeira etapa de qualquer projeto que utilize PLN diz respeito à identificação do problema, ou seja, definir o tipo de tarefa a ser desenvolvida. Ressalta-se que cada uma dessas tarefas exige abordagens específicas de pré-processamento, com vistas a garantir que os modelos consigam extrair significado dos textos de forma eficiente para a consecução do objetivo.
@@ -258,7 +258,7 @@ Embora o stemming reduza o vocabulário de forma eficiente, sua falta de precis�
 
 Muito tem se falado a respeito da Inteligência artificial generativa, sobretudo após o advento dos mecanismos de atenção [@vaswani2017attention], entretanto o que nem todos estão cientes é que a IA é um grande domínio do qual fazem parte a aprendizagem de máquina, o aprendizado profundo e o Processamento de Linguagem Natural, sub-divisão de extrema importância na concepção das IAs Generativas.
 
-![Classificação do Processamento de Linguagem Natural no campo da Inteligência Artificial.](imgs/IA_E_NLP.png){#fig-nlp width=40% fig-cap="Classificação do Processamento de Linguagem Natural no campo da Inteligência Artificial."}
+![Classificação do Processamento de Linguagem Natural no campo da Inteligência Artificial.](imgs/IA_E_NLP.png){#fig-nlp width=60% fig-cap="Classificação do Processamento de Linguagem Natural no campo da Inteligência Artificial."}
 
 O PLN engloba um conjunto de métodos computacionais que permitem que as máquinas compreendam, interpretem e manipulem a linguagem humana. Entretanto, a compreensão textual pelas máquinas não ocorre da mesma maneira que ocorre nos humanos, mas através de métodos computacionais que transformam as palavras e/ou sentenças em números, aos quais denomina-se vetores de representação textual, o que possibilita que os algoritmos intrepretem e extraiam importantes insights dos textos escritos em linguagem natural.
 
@@ -439,7 +439,7 @@ print(latex_table)
 
 Por ser uma das técnicas mais utilizadas nos campos da busca e classificação textual, decidiu-se testar esta técnica no desenvolvimento de um dos sistemas de recomendação deste trabalho, o qual será apresentado na secção da Metodologia.
 
-Entretanto, apesar de ser uma das técnicas de vetorização textual mais importantes para o PLN ao longo do tempo e de apresentar uma notável evolução no que diz respeito à captação da importância dos termos para o sentido do documento, vez que reduz drasticamente a influência de termos corriqueiros como os artigos e preposições, o TF-IDF ainda possui desvantagens, dentre as quais destacam-se a **Não captação de contexto**, uma vez que o modelo funciona por meio da correspondência exata entre termos; Ademais, possui **elevada sensibilidade a variações ortográficas**, pois assim como o *CountVectorizer* também depende da formação de um vocabulário de termos únicos; Outro problema no uso desta técnica diz respeito à **Geração de matrizes esparsas, conforme exemplo da @tbl-esparse-tfidf, as quais podem exigir elevado poder computacional para processamento, a depender do tamanho do conjunto de textos;** Por fim, a assunção de que os termos mais frequentes ao longo dos documentos são os menos importantes nem sempre será verdadeira. Um exemplo claro disso diz respeito à análise de dados de *tweets*. Apesar de as *hashtags* se repetirem ao longo de diveras publicações, retirá-las da análise desses dados prejudicaria sobremaneira a completude e o sentido dos textos.
+Entretanto, apesar de ser uma das técnicas de vetorização textual mais importantes para o PLN ao longo do tempo e de apresentar uma notável evolução no que diz respeito à captação da importância dos termos para o sentido do documento, vez que reduz drasticamente a influência de termos corriqueiros como os artigos e preposições, o TF-IDF ainda possui desvantagens, dentre as quais destacam-se a **Não captação de contexto**, uma vez que o modelo funciona por meio da correspondência exata entre termos; Ademais, possui **elevada sensibilidade a variações ortográficas**, pois assim como o *CountVectorizer* também depende da formação de um vocabulário de termos únicos; Outro problema no uso desta técnica diz respeito à **Geração de matrizes esparsas, conforme exemplo da @tbl-esparse-tfidf, as quais podem exigir elevado poder computacional para processamento, a depender do tamanho do conjunto de textos;** Por fim, a assunção de que os termos mais frequentes ao longo dos documentos são os menos importantes nem sempre será verdadeira. Um exemplo claro disso diz respeito à análise de dados de *tweets*. Apesar de as *hashtags* se repetirem ao longo de diversas publicações, retirá-las da análise desses dados prejudicaria sobremaneira a completude e o sentido dos textos.
 
 ```{python}
 #| output: asis
@@ -488,19 +488,19 @@ Esta técnica baseia-se em duas arquiteturas principais, segundo @mikolov2013eff
 
 Como vantagens desse modelo de geração de *embeddings* é possível citar a sua alta eficiência do ponto de vista computacional, sobretudo se comparado às abordagens anteriores, e a sua capacidade de captar relações semânticas entre as palavras do *corpus*.
 
-Apesar de ser considerado como um marco importante no campo da vetorização textual, o word2vec também enfrenta limitações, dentre as quais destacam-se a necessidade de dados em demasia para treinamento, sendo este um fator determinante para a qualidade das saídas[@mikolov2013efficientestimationwordrepresentations] e o desafio de lidar com a polissemia[@neelakantan2015efficientnonparametricestimationmultiple] e termos raros/novos que não foram inseridos no modelo durante a etapa de treinamento.
+Apesar de ser considerado como um marco importante no campo da vetorização textual, o word2vec também enfrenta limitações, dentre as quais destacam-se a necessidade de dados em demasia para treinamento, sendo este um fator determinante para a qualidade das saídas [@mikolov2013efficientestimationwordrepresentations] e o desafio de lidar com a polissemia [@neelakantan2015efficientnonparametricestimationmultiple] e termos raros/novos que não foram inseridos no modelo durante a etapa de treinamento.
 
-### Transformers e *self-attention:*
-Introduzida no ano de 2017 por Vaswani et al. (2017), a arquitetura de transformers é considerada como um dos grandes marcos da história do Processamento de Linguagem Natural. Esta arquitetura superou as limitações de modelos anteriores, como *Recurrent Neural Networks(RNNs)* e *Long Short-Term Memory networks(LSTMs)*, ao utilizar mecanismos de auto-atenção para capturar relações e dependências globais entre os termos em uma frase. A partir desse avanço, os *Transformers* passaram a permitir a formação de vetores de representação textual dinâmicos e contextualizados, resolvendo um dos maiores desafios do PLN até então: a captação eficiente de contexto.
+### *Transformers e self-attention:*
+Introduzida por Vaswani et al. (2017), a arquitetura de transformers é considerada como um dos grandes marcos da história do Processamento de Linguagem Natural. Esta arquitetura superou as limitações de modelos anteriores, como *Recurrent Neural Networks(RNNs)* e *Long Short-Term Memory networks(LSTMs)*, ao utilizar mecanismos de auto-atenção para capturar relações e dependências globais entre os termos em uma frase. A partir desse avanço, os *Transformers* passaram a permitir a formação de vetores de representação textual dinâmicos e contextualizados, resolvendo um dos maiores desafios do PLN até então: a captação eficiente de contexto.
 
 Esta técnica de vetorização textual possibilita o processamento paralelo completo de sentenças, de modo a captar o contexto bidirecional. Ao contrário de modelos como *Word2Vec*, que geram representações estáticas e unidirecionais (da esquerda para a direita), a arquitetura de *Transformers* considera tanto o contexto à esquerda quanto à direita simultaneamente, gerando representações dinâmicas e contextualizadas.
 
 Os mecanismos de autoatenção em modelos com esta arquitetura permitem que cada palavra em uma frase "preste atenção" em todas as outras palavras, incluindo ela mesma, para capturar dependências e relações contextuais. Tal técnica baseia-se nos conceitos de *query*, *key* e *value*. Em apertada síntese, cada palavra gera uma *query*, que é comparada com as *keys* de todas as outras palavras para calcular pesos de relevância. Esses pesos são então aplicados às *values* correspondentes, resultando em uma representação contextualizada da palavra.
 
-Além das vantagens citadas anteriormente, este novo paradigma também mostra-se muito relevante pela sua flexibilidade, vez que além da aplicação no desenvolvimento de grandes modelos de linguagem como GPT[@radford2018improving] e BERT[@devlin2019bertpretrainingdeepbidirectional], esta arquitetura pode ser adaptada a diversas tarefas no campo do PLN como tradução, busca semântica, classificação textual e, sobretudo, à tarefa de similaridade de sentenças a qual constitui o núcleo dos sistemas de recomendação desenvolvidos neste trabalho.
+Além das vantagens citadas anteriormente, este novo paradigma também mostra-se muito relevante pela sua flexibilidade, vez que além da aplicação no desenvolvimento de grandes modelos de linguagem como GPT [@radford2018improving] e BERT [@devlin2019bertpretrainingdeepbidirectional], esta arquitetura pode ser adaptada a diversas tarefas no campo do PLN como tradução, busca semântica, classificação textual e, sobretudo, à tarefa de similaridade de sentenças a qual constitui o núcleo dos sistemas de recomendação desenvolvidos neste trabalho.
 
 #### BERT e SBERT: A espinha dorsal do sistema de recomendação baseado em Transformers
-Introduzido por @devlin2019bertpretrainingdeepbidirectional, o BERT(*Bidirectional Encoder Representations from Transformers*) é um modelo de linguagem baseado na arquitetura de transformers. Este importante modelo foi pré-treinado em grandes corpora de texto usando duas tarefas principais: Masked Language Modeling (MLM), onde palavras são ocultadas e o modelo deve prevê-las com base no contexto, e Next Sentence Prediction (NSP), que ensina o modelo a entender relações entre pares de sentenças. 
+Introduzido por @devlin2019bertpretrainingdeepbidirectional, o BERT(*Bidirectional Encoder Representations from Transformers*) é um modelo de linguagem baseado na arquitetura de transformers. Este importante modelo foi pré-treinado em grandes corpora de texto usando duas tarefas principais: *Masked Language Modeling (MLM)*, onde palavras são ocultadas e o modelo deve prevê-las com base no contexto, e *Next Sentence Prediction (NSP)*, que ensina o modelo a entender relações entre pares de sentenças. 
 
 Ocorre que o BERT, apesar de suas inúmeras vantagens, possui algumas limitações que o tornam menos eficiente para tarefas específicas, como o cálculo de similaridade entre sentenças [@reimers-2019-sentence-bert]. Primeiramente, o BERT exige um grande poder de processamento devido à sua arquitetura complexa e ao mecanismo de *self-attention*. Além disso, o BERT não foi concebido originalmente para a tarefa de similaridade entre sentenças, uma vez que sua finalidade precípua é a previsão de palavras ocultas (*Masked Language Modeling*) e a compreensão de relações entre pares de sentenças (*Next Sentence Prediction*). Como resultado, para comparar duas sentenças, o BERT precisa processá-las em conjunto, o que é computacionalmente ineficiente e pode representar um risco para aplicações em larga escala, como sistemas de recomendação.
 
@@ -646,22 +646,21 @@ Dado que o sistema de recomendação é inteiramente baseado em dados textuais (
 Entre as features textuais, foram selecionadas apenas aquelas que fornecem informações extensas e únicas sobre os cursos: nome, apresentação e conteúdo programático. Essas colunas contêm descrições detalhadas sobre os temas abordados, facilitando a identificação de palavras-chave e relações semânticas. A coluna nome_curso, por sua vez, foi utilizada apenas para identificar cada capacitação em conjunto com seu respectivo ID.
 
 Por fim, visando aproximar-se ao máximo de um ambiente de produção real em que os dados de input utilizados na emissão das recomendações estarão armazenados em algum tipo de *database*, as informações dos cursos foram armazenadas em um banco de dados relacional PostgreSQL, tendo sido utilizada a linguagem python e as bibliotecas psycopg2-binary e pandas para conexão com o banco e ingestão dos dados.
-{{< pagebreak >}}
+
 
 b) **Dataset "Livros"**
 
 O segundo e mais volumoso dataset utilizado para desenvolver e testar os sistemas de recomendação traz informações sobre mais de 29.000 obras literárias em Português-BR e seus campos foram extraídos por meio de consumo da API [Google Books](https://www.googleapis.com/books/v1/) com uso da linguagem *Python* e das bibliotecas *Requests* e Pandas. Assim como o antecessor, este conjunto de dados traz consigo um campo textual em específico que possui grande relevância para o desenvolvimento deste projeto: A coluna de descrição do livro.
 
-> - Processo de obtenção dos dados:
 
 ![Exemplo de função para extração da API Google Books com uso de Python](imgs/API_GOOGLE.png){#fig-funcao-api width=90% fig-cap="Exemplo de função para extração da API Google Books com uso de Python"}
 
 
-> O processo para extração destes dados, no entanto, não fora tão simples e direto como aquele percorrido para o dataset anterior. A API do google books tem suas requisições baseadas no código ISBN que identifica cada livro, conforme demonstrado na @fig-funcao-api. Logo, foi necessário um trabalho preliminar de pesquisa para localizar uma lista com todos os ISBNs disponíveis, a qual fora encontrada e extraída em formato .parquet na plataforma [Hugging Face](https://huggingface.co/datasets/P1ayer-1/isbndb-full-database/tree/main/data), para só então adaptar a função em python para iterar sobre esta lista e construir o dataframe com os dados consolidados.
+O processo para extração destes dados, no entanto, não fora tão simples e direto como aquele percorrido para o dataset anterior. A API do google books tem suas requisições baseadas no código ISBN que identifica cada livro, conforme demonstrado na @fig-funcao-api. Logo, foi necessário um trabalho preliminar de pesquisa para localizar uma lista com todos os ISBNs disponíveis, a qual fora encontrada e extraída em formato .parquet na plataforma [Hugging Face](https://huggingface.co/datasets/P1ayer-1/isbndb-full-database/tree/main/data), para só então adaptar a função em python para iterar sobre esta lista e construir o dataframe com os dados consolidados.
 
-> Ocorre que mostrou-se inviável encaminhar requisições à API Google Books para todos os ISBNs listados, pois excederia o limite de requisições definida na documentação da ferramenta, além de gerar custos de processamento e armazenamento desnecessários, pois a maior parte daqueles dados não interessam ao projeto. Soma-se a isso o fato de que, conforme evidenciado no output da @fig-funcao-api, muitos dos identificadores presentes na lista retromencionada diziam respeito a obras em outras línguas que não a língua portuguesa, o que não era desejável uma vez que o cerne deste projeto é desenvolver sistemas de recomendação adaptados à língua portuguesa.
+Ocorre que mostrou-se inviável encaminhar requisições à API Google Books para todos os ISBNs listados, pois excederia o limite de requisições definida na documentação da ferramenta, além de gerar custos de processamento e armazenamento desnecessários, pois a maior parte daqueles dados não interessam ao projeto. Soma-se a isso o fato de que, conforme evidenciado no output da @fig-funcao-api, muitos dos identificadores presentes na lista retromencionada diziam respeito a obras em outras línguas que não a língua portuguesa, o que não era desejável uma vez que o cerne deste projeto é desenvolver sistemas de recomendação adaptados à língua portuguesa.
 
-> Isto posto, a estratégia utilizada para solucionar os problemas apontados anteriormente foi utilizar a biblioteca *langdetect*, desenvolvida pelo Google originalmente em java e adaptada em sua integralidade para python, a qual detecta automaticamente, baseando-se no título textual do livro associado ao seu código ISBN, a linguagem a qual aquela obra dizia respeito. Após a sua aplicação, a lista de ISBNs que anteriormente possuía 28 milhões de entradas, passou a conter pouco mais de 100.000 entradas. 
+Isto posto, a estratégia utilizada para solucionar os problemas apontados anteriormente foi utilizar a biblioteca *langdetect*, desenvolvida pelo Google originalmente em java e adaptada em sua integralidade para python, a qual detecta automaticamente, baseando-se no título textual do livro associado ao seu código ISBN, a linguagem a qual aquela obra dizia respeito. Após a sua aplicação, a lista de ISBNs que anteriormente possuía 28 milhões de entradas, passou a conter pouco mais de 100.000 entradas. 
 
 ```{python}
 #| output: asis
@@ -694,7 +693,7 @@ latex_table = latex_table.replace("\\\\\n", " \\\\\n\\hline\n")  # Adiciona linh
 print(latex_table)
 ```
 
-> Por conseguinte, os dados foram efetivamente extraídos do google books apenas para os ISBNs de interesse tendo sido transformados e limpos com uso da linguagem SQL e inseridos em uma nova tabela denominada "livros", armazenada no mesmo *database* onde já estava a tabela de cursos, de modo a centralizar a fonte de dados e padronizar o uso do método "carrega_dados" para ambas as tabelas na classe Recommender, a qual será analisada ao fim desta secção. A @tbl-livros-head traz uma amostra da composição final da tabela de livros.
+Por conseguinte, os dados foram efetivamente extraídos do google books apenas para os ISBNs de interesse tendo sido transformados e limpos com uso da linguagem SQL e inseridos em uma nova tabela denominada "livros", armazenada no mesmo *database* onde já estava a tabela de cursos, de modo a centralizar a fonte de dados e padronizar o uso do método "carrega_dados" para ambas as tabelas na classe Recommender, a qual será analisada ao fim desta secção. A @tbl-livros-head traz uma amostra da composição final da tabela de livros.
 
 
 ### Pré-processamento
@@ -755,25 +754,22 @@ A @fig-cosin-matrix traz um exemplo claro do que fora explicitado até aqui: Nel
 
 Embora a similaridade do cosseno tenha sido a métrica adotada no âmbito deste trabalho, outras medidas de distância, como a distância Euclidiana e a distância de Manhattan, também podem ser aplicadas ao caso em tela [@reimers-2019-sentence-bert]. No entanto, essas métricas podem apresentar limitações significativas no presente contexto de sistemas de recomendação baseados em **vetores de alta dimensionalidade**.
 
-No caso da matriz TFIDF gerada pelo primeiro sistema de recomendação, estamos a lidar com uma matriz esparsa, conforme ilustrado na amostra da @tbl-esparse-tfidf. Para o conjunto de dados menor (cursos), a matriz possui cerca de 7.000 colunas, enquanto para o conjunto de dados maior (livros), ela ultrapassa as 100.000 colunas. Isto ocorre porque cada palavra única no vocabulário se transforma numa coluna na matriz. Já para as recomendações baseadas em vectores de embeddings densos gerados pelo modelo SBERT (paraphrase-multilingual-MiniLM-L12-v2), o espaço vetorial é restrito a 384 dimensões. Embora isto seja consideravelmente menor que o espaço TFIDF, ainda pode ser excessivo para métricas que consideram a distância absoluta entre os pontos, em vez de se focarem no ângulo e na direcção entre os vectores.
+No caso da matriz TFIDF gerada pelo primeiro sistema de recomendação, estamos a lidar com uma matriz esparsa, conforme ilustrado na amostra da @tbl-esparse-tfidf. Para o conjunto de dados menor (cursos), a matriz possui cerca de 7.000 colunas, enquanto para o conjunto de dados maior (livros), ela ultrapassa as 100.000 colunas. Isto ocorre porque cada palavra única no vocabulário se transforma numa coluna na matriz. Já para as recomendações baseadas em vectores de embeddings densos gerados pelo modelo SBERT *(paraphrase-multilingual-MiniLM-L12-v2)*, o espaço vetorial é restrito a 384 dimensões. Embora isto seja consideravelmente menor que o espaço TFIDF, ainda pode ser excessivo para métricas que consideram a distância absoluta entre os pontos, em vez de se focarem no ângulo e na direcção entre os vectores.
 
 Isto posto, resta claro que um dos principais desafios no presente contexto diz respeito ao enfrentamento da alta dimensionalidade do espaço vetorial, fenómeno que afeta métricas sensíveis à magnitude dos vetores, como a Euclidiana, mas tende a apresentar impacto reduzido na similaridade do cosseno, que se concentra na orientação relativa dos vetores, conforme discutido por @Aggarwal2001.
 
 Por fim, embora a similaridade do cosseno tenha sido escolhida para extracção dos resultados deste trabalho, serão apresentados, na secção seguinte ("Apresentação dos resultados"), testes comparativos que extraem recomendações para o mesmo item base, utilizando a similaridade do cosseno, a distância Euclidiana e a distância de Manhattan. O objectivo é analisar as principais diferenças nos resultados gerados por estas diferentes abordagens.
 
-{{< pagebreak >}}
 
 ### Construção dos sistemas de recomendação: Desenvolvimento das Classes TfidfRecommender e SBERTRecommender 
 Após a obtenção e transformação dos dados, passou-se à construção efetiva dos sistemas de recomendação. Optou-se mais uma vez pelo uso da linguagem de programação python e do paradigma de orientação a objetos para facilitar a manutenção, organização e reutilização dos códigos fonte dos sistemas de recomendação. Foram implementadas duas classes distintas – TfidfRecommender e SBERTRecommender –, cada uma encapsulando o fluxo completo de seu respectivo algoritmo.
 
 A partir deste momento, cada sistema de recomendação será analisado separadamente, dado que a natureza dos métodos utilizados para a extração e representação dos vetores difere significativamente entre eles. Inicialmente, será apresentada a implementação do modelo baseado em TF-IDF, uma abordagem mais tradicional e rudimentar para recomendação textual. Em seguida, será detalhada a construção do modelo baseado em SBERT e *transformers*, que utiliza representações semânticas mais avançadas para capturar significados contextuais nos textos. 
-
+{{< pagebreak >}}
 - **TfidfRecommender**
 
-![Construtor da Classe TfidfRecommender](imgs/classe_tfidf.png){#fig-class-tfidf width=100% fig-cap="Construtor da Classe TfidfRecommender"}
+![Construtor da Classe TfidfRecommender](imgs/classe_tfidf.png){#fig-class-tfidf width=90% fig-cap="Construtor da Classe TfidfRecommender"}
 
-
-{{< pagebreak >}}
 
 + Bibliotecas e versão do Python utilizadas:
     - **Python 3.12.3**
@@ -794,10 +790,15 @@ A partir deste momento, cada sistema de recomendação será analisado separadam
 + Método "carrega_dados": 
     - Argumento(s) necessários: Nome da tabela no banco de dados que será utilizada como fonte de extração de texto para o modelo; 
     - Este método é responsável pela abertura do banco de dados relacional e carregamento das colunas textuais de interesse para o modelo. Utiliza-se para tanto os dados das features inseridos pelo operador ao instanciar a classe TfidfRecommender(emb_cols + item_name_col).
-  {{< pagebreak >}}
+  
 + Método "_limpar_e_compilar_texto":
 
-   - Considerando o fragmento original do texto descritivo do livro "As Mil e Uma Noites", observa-se um exemplo da aplicação do método "_limpar_e_compilar_texto" aos dados ora em comento:
+   - Executa a etapa de limpeza e preparação dos dados textuais das colunas que serão vetorizadas. Por se tratar do sistema de recomendação baseado em tfidf, o qual requer minuciosa etapa de limpeza dos dados para evitar-se redundâncias e ruídos que sobrecarreguem o sistema ao estender em demasia o vocabulário[^3], aplicam-se aos dados as seguintes transformações: Remoção de acentos, sinais de pontuação e caracteres especiais; Alteração para que todas as palavras estejam em letras minúsculas; Remoção das *stopwords* pré-definidas pela biblioteca nltk e aquelas *stopwords* adicionais definidas pelo operador em *stopwords_extra*, se houverem; Junção do texto de todas as colunas textuais apontadas pelo operador em uma coluna chamada "compilado textual", a qual trará o texto do nome do item acrescido do texto das demais colunas referentes ao texto de apresentação, eventual conteúdo programático e descrição. Esta coluna será utilizada como base para extração dos vetores que descrevem aquele item na matriz TF-IDF. Ressalta-se ainda que a nova variável criada prescinde de qualquer tratamento por já ter sido formada pela agregação de colunas limpas e transformadas.
+
+    [^3]: Vocabulário refere-se ao conjunto de termos únicos extraídos de todos os textos analisados, onde cada termo corresponde a uma coluna na matriz TF-IDF.
+    
+    {{< pagebreak >}}
+   - Considerando o fragmento original do texto descritivo do livro "As Mil e Uma Noites", observa-se um exemplo da aplicação do método em comento à frase exemplificativa a seguir:
 
 
   > **"O livro apresenta as fábulas das 'Mil e uma Noites', com seu colorido oriental"**
@@ -858,20 +859,16 @@ print(latex_table)
 ```
 
 
-
-   - Executa a etapa de limpeza e preparação dos dados textuais das colunas que serão vetorizadas. Por se tratar do sistema de recomendação baseado em tfidf, o qual requer minuciosa etapa de limpeza dos dados para evitar-se redundâncias e ruídos que sobrecarreguem o sistema ao estender em demasia o vocabulário*(*bag-of-words*), aplicam-se aos dados as seguintes transformações: Remoção de acentos, sinais de pontuação e caracteres especiais; Alteração para que todas as palavras estejam em letras minúsculas; Remoção das stopwords pré-definidas pela biblioteca nltk + stopwords definidas pelo operador em stopwords_extra, se houverem; Junção do texto de todas as colunas textuais apontadas pelo operador em uma coluna chamada "compilado textual", a qual trará o texto do nome do item + o texto das demais colunas referentes ao texto de apresentação, eventual conteúdo programático e descrição. Esta coluna será utilizada como base para extração dos vetores que descrevem aquele item na matriz tfidf. Ressalta-se ainda que a nova variável criada prescinde de qualquer tratamento por já ter sido formada pela agregação de colunas limpas e transformadas.
-  {{< pagebreak >}}
 + Método "gerar_vetores":
   - Recebe os dados da coluna "compilado_textual" limpos e compilados e aplica sobre eles o método tfidf_vectorizer da biblioteca scikit-learn, de modo a transformá-los nos vetores de representação textual numéricos que serão utilizados como base para a etapa de aplicação da similaridade do cosseno e posterior extração das recomendações;
-  - Calcula a matriz TF-IDF, onde cada linha representa um item (livro ou curso) e cada coluna representa um termo do vocabulário[^3], atribuindo pesos conforme a importância relativa do termo no conjunto de dados. Isso permite que textos com palavras frequentes, mas pouco discriminativas, tenham menos peso, enquanto termos mais raros e relevantes recebam maior influência na representação vetorial.
+  - Calcula a matriz TF-IDF, onde cada linha representa um item (livro ou curso) e cada coluna representa um termo do vocabulário, atribuindo pesos conforme a importância relativa do termo no conjunto de dados. Isso permite que textos com palavras frequentes, mas pouco discriminativas, tenham menos peso, enquanto termos mais raros e relevantes recebam maior influência na representação vetorial.
   - Utiliza a técnica de linear kernel para calcular a similaridade do cosseno entre os vetores da matriz TF-IDF. Esse cálculo mede o grau de proximidade entre os itens, atribuindo valores entre 0 e 1, onde 1 indica máxima similaridade e 0 indica ausência de relação.
   - Armazena a matriz de similaridade do cosseno para que ela possa ser utilizada posteriormente no método de recomendação, garantindo que as consultas sejam feitas de forma eficiente sem necessidade de recalcular as similaridades a cada requisição.
+  {{< pagebreak >}}
   - Cria um índice (self.indice), que mapeia os identificadores únicos dos itens (id_col) aos seus respectivos índices na matriz de similaridade, permitindo consultas rápidas para recomendações futuras.
   - Exibe informações sobre a geração dos embeddings, incluindo o shape da matriz TF-IDF e amostras das matrizes TF-IDF e de similaridade do cosseno, para fins de depuração e análise da qualidade das representações vetoriais.
 
-[^3]: Vocabulário refere-se ao conjunto de termos únicos extraídos de todos os textos analisados, onde cada termo corresponde a uma coluna na matriz TF-IDF.
 
-{{< pagebreak >}}
 + Método "recomendar":
   
   ![Demonstração da função que extrai as recomendações](imgs/FUNC_RECOMEND_TFIDF.png){#fig-funcao-recomend-tfidf width=100% fig-cap="Demonstração da função que extrai as recomendações"}
@@ -886,7 +883,6 @@ print(latex_table)
     - Retorna um DataFrame contendo os IDs, nomes e scores de similaridade dos itens recomendados, de modo a facilitar a análise da qualidade daquilo que foi recomendado como sendo similar ao item de entrada.
     - Exibe as recomendações de forma estruturada, apresentando o nome do item original e os itens sugeridos com seus respectivos scores.
 
-{{< pagebreak >}}
 
 - **SBERTRecommender**
 
