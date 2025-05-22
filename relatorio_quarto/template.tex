@@ -17,7 +17,7 @@
 
 %\usepackage[style=apa]{biblatex}
 %\addbibresource{referencias.bib}
-\pagenumbering{roman}
+\pagenumbering{Roman}
 
 
 % Custom bullet styles for nested lists
@@ -190,9 +190,15 @@
 \fancyfoot[R]{\thepage} % Fonte e cor da numeração das páginas
 
 % Configuração para numeração romana e arábica
+%\newcommand{\setRomanPageNumbering}{
+%  \pagenumbering{Roman}
+%}
+
 \newcommand{\setRomanPageNumbering}{
+  \renewcommand{\thepage}{\Roman{page}}%
   \pagenumbering{roman}
 }
+
 
 \newcommand{\setArabicPageNumbering}{
   \clearpage
