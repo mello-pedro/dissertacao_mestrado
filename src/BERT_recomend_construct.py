@@ -82,7 +82,7 @@ class Recommender:
                 
                 # gera embeddings de cada lote
                 try:
-                    batch_embeddings = self.model.encode(batch_texts, convert_to_tensor=True)
+                    batch_embeddings = self.model.encode(batch_texts, convert_to_tensor=True, normalize_embeddings=True)
                     #print(f"Embeddings do lote gerados com sucesso: {batch_embeddings}")(p/ teste apenas)
 
                     # corrige atribuição para evitar ChainedAssignmentError
@@ -108,16 +108,90 @@ class Recommender:
 
     
     ### FUNCIONA, PORÉM ATIVAR SOMENTE QND FOR COMPARAR 3 MEDIDAS DE SIMILARIDADE
+    def recomendar_itens(self, id_item, top_n: int = 3):
+        """Retorna recomendações baseadas em Similaridade do Cosseno, Distância Euclidiana e Distância de Manhattan."""
+        id_item = str(id_item)
+        self.df_text[self.id_col] = self.df_text[self.id_col].astype(str)
+
+        if id_item not in self.df_text[self.id_col].values:
+            print(f"ID {id_item} não encontrado na base de dados.")
+            return None
+
+            # Reset index and map IDs to positions
+        df_reset = self.df_text.reset_index(drop=True)
+        indice = pd.Series(df_reset.index, index=df_reset[self.id_col])
+        idx = indice[id_item]
+
+            # ------------------ Métricas ------------------
+            # 1) Similaridade do Cosseno (quanto maior, mais similar)
+        sim_scores = util.cos_sim(self.embeddings[idx], self.embeddings).squeeze().tolist()
+            # 2) Distância Euclidiana (quanto menor, mais similar)
+        eucl_distances = torch.norm(self.embeddings - self.embeddings[idx], dim=1).tolist()
+            # 3) Distância de Manhattan (L1) (quanto menor, mais similar)
+        manh_distances = torch.sum(torch.abs(self.embeddings - self.embeddings[idx]), dim=1).tolist()
+
+            # ------------------ Ordenação ------------------
+        sim_sorted = sorted(enumerate(sim_scores), key=lambda x: x[1], reverse=True)[1:top_n+1]
+        eucl_sorted = sorted(enumerate(eucl_distances), key=lambda x: x[1])[1:top_n+1]
+        manh_sorted = sorted(enumerate(manh_distances), key=lambda x: x[1])[1:top_n+1]
+
+        sim_idx   = [i[0] for i in sim_sorted]
+        eucl_idx  = [i[0] for i in eucl_sorted]
+        manh_idx  = [i[0] for i in manh_sorted]
+
+            # ------------------ DataFrames de Recomendação ------------------
+        recomendacao_cos   = pd.DataFrame({
+            'Item Recomendado': df_reset.loc[sim_idx, 'nome_original'].values,
+            'Sim_Cosseno':      [score[1] for score in sim_sorted]
+        }).reset_index(drop=True)
+
+        recomendacao_eucl  = pd.DataFrame({
+            'Item Recomendado': df_reset.loc[eucl_idx, 'nome_original'].values,
+            'Dist_Euclidiana':  [dist[1] for dist in eucl_sorted]
+        }).reset_index(drop=True)
+
+        recomendacao_manh  = pd.DataFrame({
+            'Item Recomendado': df_reset.loc[manh_idx, 'nome_original'].values,
+            'Dist_Manhattan':   [dist[1] for dist in manh_sorted]
+        }).reset_index(drop=True)
+
+            # Ajuste de índice para apresentação (inicia em 1)
+        recomendacao_cos.index += 1
+        recomendacao_eucl.index += 1
+        recomendacao_manh.index += 1
+
+            # Nome do item consultado
+        item_name = df_reset.loc[df_reset[self.id_col] == id_item, 'nome_original'].values[0].title()
+
+        print(f"Recomendações para o item '{item_name}' (ID: {id_item}):\n")
+        # print("▶️ Similaridade do Cosseno:")
+        # print(recomendacao_cos)
+        # print("\n▶️ Distância Euclidiana:")
+        # print(recomendacao_eucl)
+        # print("\n▶️ Distância de Manhattan:")
+        # print(recomendacao_manh)
+        
+        return {
+                "cosine": recomendacao_cos,
+                "euclidean": recomendacao_eucl,
+                "manhattan": recomendacao_manh
+            }
+
+        #return recomendacao_cos, recomendacao_eucl, recomendacao_manh
+
+
+    
+    #### FUNCIONA PERFEITAMENTE. VOU TENTAR ACIMA IMPLEMENTAR DIST EUCLIDEANA TB.
     # def recomendar_itens(self, id_item, top_n: int = 3):
     #     id_item = str(id_item)
 
-    #     # Garante que os IDs da base também são strings
+    #     ## Garante que os IDs da base também são strings
     #     self.df_text[self.id_col] = self.df_text[self.id_col].astype(str)
 
     #     if id_item not in self.df_text[self.id_col].values:
     #         print(f"ID {id_item} não encontrado na base de dados.")
     #         return None
-
+        
     #     df_reset = self.df_text.reset_index()
     #     df_reset[self.id_col] = df_reset[self.id_col].astype(str)  # Garante que o ID está correto
 
@@ -125,96 +199,38 @@ class Recommender:
     #     indice = pd.Series(df_reset.index, index=df_reset[self.id_col])
     #     idx = indice[id_item]
 
-    #     # Calcula a similaridade do cosseno
-    #     sim_score = util.cos_sim(self.embeddings[idx], self.embeddings).squeeze().tolist()
+                # if id_item not in self.df_text[self.id_col].values:
+                #     print(f"ID {id_item} não encontrado na base de dados.")
+                #     return None
+                
+                # df_reset = self.df_text.reset_index()
+                # indice = pd.Series(df_reset.index, index=df_reset[self.id_col].astype(str))
+                # idx = indice[id_item]
 
-    #     # Calcula a distância euclidiana
-    #     eucl_distances = torch.norm(self.embeddings - self.embeddings[idx], dim=1).tolist()
+                # print(f"Embeddings do item {id_item}: {self.embeddings[idx]}")
+        # sim_score = util.cos_sim(self.embeddings[idx], self.embeddings).squeeze()
+        # sim_score = sim_score.tolist()
 
-    #     # Ordena por similaridade do cosseno (maior é melhor)
-    #     sim_sorted = sorted(enumerate(sim_score), key=lambda x: x[1], reverse=True)[1:top_n+1]
+        # sim_score = sorted(enumerate(sim_score), key=lambda x: x[1], reverse=True)[1:top_n+1]
+        # sim_index = [i[0] for i in sim_score]
 
-    #     # Ordena por distância euclidiana (menor é melhor)
-    #     eucl_sorted = sorted(enumerate(eucl_distances), key=lambda x: x[1])[1:top_n+1]
+        # recomendacao = pd.DataFrame({
+        #     #'Item Recomendado': self.df_text[self.item_name_col].iloc[sim_index],
+        #     'Item Recomendado': self.df_text['nome_original'].iloc[sim_index],
+        #     'Similaridade Cosseno': [score[1] for score in sim_score]
+        # }).reset_index(drop=True)
 
-    #     # Índices ordenados
-    #     sim_index = [i[0] for i in sim_sorted]
-    #     eucl_index = [i[0] for i in eucl_sorted]
+        # # Adjust index to start at 1
+        # recomendacao.index += 1
 
-    #     # Recomendações por Similaridade do Cosseno
-    #     recomendacao_cos = pd.DataFrame({
-    #         'Item Recomendado': self.df_text[self.item_name_col].iloc[sim_index],
-    #         'Sim_Coss': [score[1] for score in sim_sorted]
-    #     }).reset_index(drop=True)
+        # # Get original item name
+        # item_name = self.df_text.loc[self.df_text[self.id_col] == id_item, 'nome_original'].values[0].title()
 
-    #     # Recomendações por Distância Euclidiana
-    #     recomendacao_eucl = pd.DataFrame({
-    #         'Item Recomendado': self.df_text[self.item_name_col].iloc[eucl_index],
-    #         'Dist_Eucl': [score[1] for score in eucl_sorted]
-    #     }).reset_index(drop=True)
-
-    #     print(f"As recomendações mais similares ao item '{self.df_text.loc[idx, self.item_name_col]}' são:\n")
-
-    #     print("\n📌 **Baseado em Similaridade do Cosseno:**")
-    #     print(recomendacao_cos)
-
-    #     print("\n📌 **Baseado em Distância Euclidiana:**")
-    #     print(recomendacao_eucl)
-
-    #     return recomendacao_cos, recomendacao_eucl
-
-    
-    
-    #### FUNCIONA PERFEITAMENTE. VOU TENTAR ACIMA IMPLEMENTAR DIST EUCLIDEANA TB.
-    def recomendar_itens(self, id_item, top_n: int = 3):
-        id_item = str(id_item)
-
-        ## Garante que os IDs da base também são strings
-        self.df_text[self.id_col] = self.df_text[self.id_col].astype(str)
-
-        if id_item not in self.df_text[self.id_col].values:
-            print(f"ID {id_item} não encontrado na base de dados.")
-            return None
-        
-        df_reset = self.df_text.reset_index()
-        df_reset[self.id_col] = df_reset[self.id_col].astype(str)  # Garante que o ID está correto
-
-        # Construção do índice
-        indice = pd.Series(df_reset.index, index=df_reset[self.id_col])
-        idx = indice[id_item]
-
-        # if id_item not in self.df_text[self.id_col].values:
-        #     print(f"ID {id_item} não encontrado na base de dados.")
-        #     return None
-        
-        # df_reset = self.df_text.reset_index()
-        # indice = pd.Series(df_reset.index, index=df_reset[self.id_col].astype(str))
-        # idx = indice[id_item]
-
-        #print(f"Embeddings do item {id_item}: {self.embeddings[idx]}")
-        sim_score = util.cos_sim(self.embeddings[idx], self.embeddings).squeeze()
-        sim_score = sim_score.tolist()
-
-        sim_score = sorted(enumerate(sim_score), key=lambda x: x[1], reverse=True)[1:top_n+1]
-        sim_index = [i[0] for i in sim_score]
-
-        recomendacao = pd.DataFrame({
-            #'Item Recomendado': self.df_text[self.item_name_col].iloc[sim_index],
-            'Item Recomendado': self.df_text['nome_original'].iloc[sim_index],
-            'Similaridade Cosseno': [score[1] for score in sim_score]
-        }).reset_index(drop=True)
-
-        # Adjust index to start at 1
-        recomendacao.index += 1
-
-        # Get original item name
-        item_name = self.df_text.loc[self.df_text[self.id_col] == id_item, 'nome_original'].values[0].title()
-
-        if recomendacao.empty:
-            print("Nenhuma recomendação encontrada.")
-        else:
-            print(f"As recomendações mais similares ao item '{item_name}' são:\n")
-            #print(f"As recomendações mais similares ao item '{self.df_text.loc[idx, self.original_nome_item]}' são:\n")
-        return recomendacao
+        # if recomendacao.empty:
+        #     print("Nenhuma recomendação encontrada.")
+        # else:
+        #     print(f"As recomendações mais similares ao item '{item_name}' são:\n")
+        #     #print(f"As recomendações mais similares ao item '{self.df_text.loc[idx, self.original_nome_item]}' são:\n")
+        # return recomendacao
        
         
