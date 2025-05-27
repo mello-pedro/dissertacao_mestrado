@@ -5,8 +5,8 @@
 \usepackage{pagecolor}
 \usepackage{background}
 \usepackage{tocloft}
-\usepackage{titlesec}
 \usepackage{fancyhdr}
+\usepackage{titlesec}
 \usepackage{tikz}
 \usepackage{graphicx}
 \usepackage{indentfirst}
@@ -14,10 +14,9 @@
 \usepackage{pdfpages}
 \usepackage{enumitem}
 
-
+\setlength{\footskip}{30pt}
 %\usepackage[style=apa]{biblatex}
 %\addbibresource{referencias.bib}
-\pagenumbering{Roman}
 
 
 % Custom bullet styles for nested lists
@@ -38,6 +37,31 @@
 \definecolor{corTitulo}{HTML}{46291c}
 \definecolor{corSubsDois}{HTML}{000000} % Preto
 
+\pagenumbering{Roman}
+
+% Configurar cabeçalhos e rodapés
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[R]{\thepage} % Fonte e cor da numeração das páginas
+
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \renewcommand{\headrulewidth}{0pt}
+  \fancyfoot[R]{\thepage} % Garantir alinhamento à direita
+  \fancyfootoffset{0pt}
+}
+
+% No preâmbulo (após carregar fancyhdr):
+\fancypagestyle{tocfirstpage}{
+  \fancyhf{}
+  \renewcommand{\headrulewidth}{0pt}
+  \fancyfoot{} % Remove TODOS os rodapés
+}
+
+% Forçar estilo personalizado APENAS na primeira página do TOC
+\AfterEndPreamble{
+  \addtocontents{toc}{\protect\thispagestyle{tocfirstpage}}
+}
 
 % Estilos globais do doc
 \allsectionsfont{\color{corSubsDois}}
@@ -89,7 +113,6 @@
 
     \restoregeometry
     \pagecolor{white}\color{black}
-    \clearpage
   \end{titlepage}
 
 
@@ -184,10 +207,7 @@
   {} % Formatação do título do subparágrafo
   [\vspace{0.5ex}] % Espaço após o número e antes do título
 
-% Configurar cabeçalhos e rodapés
-\pagestyle{fancy}
-\fancyhf{}
-\fancyfoot[R]{\thepage} % Fonte e cor da numeração das páginas
+
 
 % Configuração para numeração romana e arábica
 %\newcommand{\setRomanPageNumbering}{
